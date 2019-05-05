@@ -83,8 +83,7 @@ void help()
     printf("%s\t\t\t\tthis let's me know I should increment the minor version number as well\n", ARG_CHNG_MAJOR);
     printf("%s\t\t\t\t(default) this let's me know I should increment the build version number as well\n", ARG_CHNG_MAJOR);
 
-    printf("\n%s [file-extension]\tthis let's me know where in the file I should look (only txt and c supported)\n", ARG_FILE_TYPE);
-    printf("%s [prefix]\t\tthis let's me know if there's something in front of major/minor/build (for example VER_BUILD instead of BUILD)\n", ARG_PREFIX);
+    printf("\n%s [prefix]\t\tthis let's me know if there's something in front of major/minor/build (for example VER_BUILD instead of BUILD)\n", ARG_PREFIX);
     
 }
 
