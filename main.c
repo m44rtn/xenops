@@ -77,7 +77,7 @@ tARG_INFO argument_info;
 
 void help()
 {
-    printf("usage: xenops --file [file-loc] (--ftype [txt/c] --prefix [prefix] --major --minor --build)\n\n\n");
+    printf("usage: xenops --file [file-loc] (--prefix [prefix] --major --minor --build)\n\n\n");
     printf("%s\t\t\t\tlet's me know which file to use\n", ARG_FILE_LOC);
     printf("\n%s\t\t\t\tthis let's me know I should increment the major version number as well\n", ARG_CHNG_MAJOR);
     printf("%s\t\t\t\tthis let's me know I should increment the minor version number as well\n", ARG_CHNG_MAJOR);
