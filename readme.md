@@ -1,4 +1,8 @@
 # Xenops
 
 ## TODO
-write documentation and readme
+* write documentation and readme
+
+* refactor and comment
+
+* enjoy!
