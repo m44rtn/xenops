@@ -21,11 +21,11 @@ Xenops searches for the keywords `BUILD`, `MINOR` or `MAJOR` depending on the in
 
 In the file you need to use the keywords, otherwise xenops fails. 
 Example:
-`#define BUILD 0
+`#define BUILD 0`
 
-#define MINOR 1
+`#define MINOR 1`
 
-#define MAJOR 2`
+`#define MAJOR 2`
 
 ## How to install and run xenops
 You can use the makefile to build the source. Just use 
