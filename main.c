@@ -201,6 +201,7 @@ void parse_file(FILE *file)
         
         if(!strcmp(&type[argument_info.prefix_len], "BUILD") && (argument_info.flags & FLAG_BUILD))
         {
+            printf("Changed BUILD ");
             nver = do_the_trick(nver);
             strcpy(data[i].str, file_str);
             ignore = sprintf(data[i].str, "%s %s %d\n", define, type, nver);
@@ -211,6 +212,7 @@ void parse_file(FILE *file)
         }
         if(!strcmp(&type[argument_info.prefix_len], "MINOR") && (argument_info.flags & FLAG_MINOR))
         {
+            printf("Changed MINOR ");
             nver = do_the_trick(nver);
             strcpy(data[i].str, file_str);
             ignore = sprintf(data[i].str, "%s %s %d\n", define, type, nver);
@@ -221,6 +223,7 @@ void parse_file(FILE *file)
         }
         if(!strcmp(&type[argument_info.prefix_len], "MAJOR") && (argument_info.flags & FLAG_MAJOR))
         {
+            printf("Changed MAJOR ");
             nver = do_the_trick(nver);
             strcpy(data[i].str, file_str);
             ignore = sprintf(data[i].str, "%s %s %d\n", define, type, nver);
@@ -247,7 +250,7 @@ void parse_file(FILE *file)
 int do_the_trick(int ver_num)
 {
     ver_num++;
-    printf("hi! %d\n", ver_num);
+    printf("to %d\n", ver_num);
     return ver_num;
 }
 
