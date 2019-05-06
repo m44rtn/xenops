@@ -27,7 +27,6 @@ SOFTWARE.*/
 #include <stdlib.h>
 
 #define ARG_FILE_LOC            "--file"    /* location of the file containing the versioning */
-#define ARG_FILE_TYPE           "--ftype"   /* specifies the file type, this changes where we will search for major/minor/build, default is txt */
 
 #define ARG_HELP                "--help"    /* guess what this does */
 
@@ -155,11 +154,12 @@ void arguments_parse(unsigned int nargs, char *arguments[])
         
         /* look what needs to be changed within the file */
         else if(!strcmp(arguments[i], ARG_CHNG_BUILD))
-            argument_info.flags |= FLAG_BUILD;
+            argument_info.flags = FLAG_BUILD;
         else if(!strcmp(arguments[i], ARG_CHNG_MINOR))
-            argument_info.flags |= FLAG_MINOR;
+            argument_info.flags = FLAG_MINOR;
         else if(!strcmp(arguments[i], ARG_CHNG_MAJOR))
-            argument_info.flags |= FLAG_MAJOR; 
+            argument_info.flags = FLAG_MAJOR; 
+        /*todo: when xenops can do both, OR these values */
            
     }
 }
