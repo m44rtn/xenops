@@ -51,7 +51,7 @@ SOFTWARE.*/
 void help();
 void arguments_parse(unsigned int nargs, char *arguments[]);
 void parse_file(FILE *file);
-int do_the_trick(int ver_num);
+int do_the_trick(long ver_num);
 
 
 typedef struct
@@ -182,7 +182,7 @@ void parse_file(FILE *file)
     const int define_length = argument_info.prefix_len + 5;
 
     char define[7], type[define_length];
-    int nver;
+    long nver;
 
     char *str1, *str2, *str3;
 
@@ -194,7 +194,7 @@ void parse_file(FILE *file)
         
         size_t line_len = strlen(file_str);
 
-        int ignore = sscanf(file_str, "%s %s %d", define, type, &nver);
+        int ignore = sscanf(file_str, "%s %s %ld", define, type, &nver);
 
         if(strcmp(define, "#define"))
             continue;
@@ -204,7 +204,7 @@ void parse_file(FILE *file)
             printf("Changed BUILD ");
             nver = do_the_trick(nver);
             strcpy(data[i].str, file_str);
-            ignore = sprintf(data[i].str, "%s %s %d\n", define, type, nver);
+            ignore = sprintf(data[i].str, "%s %s %ld\n", define, type, nver);
             data[i].line_size = line_len;
             fseek(file, -(data[i].line_size), SEEK_CUR);
             fputs(data[i].str, file);
@@ -215,7 +215,7 @@ void parse_file(FILE *file)
             printf("Changed MINOR ");
             nver = do_the_trick(nver);
             strcpy(data[i].str, file_str);
-            ignore = sprintf(data[i].str, "%s %s %d\n", define, type, nver);
+            ignore = sprintf(data[i].str, "%s %s %ld\n", define, type, nver);
             data[i].line_size = line_len;
             fseek(file, -(data[i].line_size), SEEK_CUR);
             fputs(data[i].str, file);
@@ -226,7 +226,7 @@ void parse_file(FILE *file)
             printf("Changed MAJOR ");
             nver = do_the_trick(nver);
             strcpy(data[i].str, file_str);
-            ignore = sprintf(data[i].str, "%s %s %d\n", define, type, nver);
+            ignore = sprintf(data[i].str, "%s %s %ld\n", define, type, nver);
             data[i].line_size = line_len;
             fseek(file, -(data[i].line_size), SEEK_CUR);
             fputs(data[i].str, file);
@@ -247,10 +247,10 @@ void parse_file(FILE *file)
     fwrite(original_str_ptr, file_size, 1, file);*/
 }
 
-int do_the_trick(int ver_num)
+int do_the_trick(long ver_num)
 {
     ver_num++;
-    printf("to %d\n", ver_num);
+    printf("to %ld\n", ver_num);
     return ver_num;
 }
 
