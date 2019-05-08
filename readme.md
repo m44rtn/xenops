@@ -14,6 +14,8 @@ Instead of:
 
 `xenops --build --major`
 
+*EDIT:* since commit [2244fca2](https://github.com/m44rtn/xenops/commit/2244fca2402adebbf88ab526624df471e0220ea7) you can do both at the same time by running `xenops --build --major [other commands]`
+
 ## Usage
 Xenops can be used like this: `xenops --file [file-loc] (--prefix [prefix] --major --minor --build)`. To run xenops an input file is required. You can do specify one by running `xenops --file <location to file> [other commands]`. If you don't specify `--major`, `--minor` or `--build`, the latter one (`--build`) is always the default if nothing is specified. In case you specified either MAJOR or MINOR, and want xenops to change the BUILD too you have to specify it.
 
