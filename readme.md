@@ -15,7 +15,7 @@ Instead of:
 `xenops --build --major`
 
 ## Usage
-Xenops can be used like this: `xenops --file [file-loc] (--prefix [prefix] --major --minor --build)`. To run xenops an input file is required. You can do specify one by running `xenops --file <location to file> [other commands]`. If you don't specify `--major`, `--minor` or `--build`, the latter one (`--build`) is always the default.
+Xenops can be used like this: `xenops --file [file-loc] (--prefix [prefix] --major --minor --build)`. To run xenops an input file is required. You can do specify one by running `xenops --file <location to file> [other commands]`. If you don't specify `--major`, `--minor` or `--build`, the latter one (`--build`) is always the default if nothing is specified. In case you specified either MAJOR or MINOR, and want xenops to change the BUILD too you have to specify it.
 
 Xenops searches for the keywords `BUILD`, `MINOR` or `MAJOR` depending on the input command. Xenops also supports a prefix to the keywords. An example for this is HI_ in `#define HI_BUILD 0`. If you use a prefix, xenops will fail at finding the keywords if you don't specify it. To specify a prefix run `xenops --prefix <prefix> [other commands]`, xenops will then ignore these prefixes.
 

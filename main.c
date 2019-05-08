@@ -91,11 +91,13 @@ int main(unsigned int nargs, char* args[])
 {
     /* set the argument_info struct up in such a way we can detect errors */
     argument_info.file          = NULL;
-    argument_info.flags         = FLAG_BUILD;
+    argument_info.flags         = 0;
     argument_info.prefix_len    = 0;
 
     /* parse the arguments (it probably isn't called 'parsing', but I'll use the word anyway*/
     arguments_parse((nargs - 1), &args[1]);
+
+    if(argument_info.flags == 0) argument_info.flags = FLAG_BUILD;
 
     if((argument_info.flags & FLAG_HELP))
     {
@@ -154,11 +156,11 @@ void arguments_parse(unsigned int nargs, char *arguments[])
         
         /* look what needs to be changed within the file */
         else if(!strcmp(arguments[i], ARG_CHNG_BUILD))
-            argument_info.flags = FLAG_BUILD;
+            argument_info.flags |= FLAG_BUILD;
         else if(!strcmp(arguments[i], ARG_CHNG_MINOR))
-            argument_info.flags = FLAG_MINOR;
+            argument_info.flags |= FLAG_MINOR;
         else if(!strcmp(arguments[i], ARG_CHNG_MAJOR))
-            argument_info.flags = FLAG_MAJOR; 
+            argument_info.flags |= FLAG_MAJOR; 
         /*todo: when xenops can do both, OR these values */
            
     }
@@ -178,9 +180,9 @@ void parse_file(FILE *file)
         size_t line_len = strlen(file_str);
         int ignore = sscanf(file_str, "%s %s %ld", define, type, &nver);
 
-        /* if the current line doesn't start with #define or %define (assembly files) read the 
+        /* if the current line doesn't start with #define read the 
             next line*/
-        if(strcmp(define, "#define") || strcmp(define, "%define"))
+        if(strcmp(define, "#define") )
             continue;
         
         /* check if the current line is either the BUILD/MINOR/MAJOR and if the flag for
@@ -192,7 +194,7 @@ void parse_file(FILE *file)
         /* if it is, change it */
         if(isBuild || isMinor || isMajor)
         {
-            printf("Changed %s ", &type);
+            printf("Changed %s ", type);
             nver = do_the_trick(nver);
             ignore = sprintf(file_str, "%s %s %ld\n", define, type, nver);
             write_to_file(file, line_len, file_str); 

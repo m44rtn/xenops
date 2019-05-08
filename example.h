@@ -3,8 +3,8 @@
 #ifndef EXAMPLE_H
 #define EXAMPLE_H
 
-#define BUILD 1017
-#define MINOR 2
-#define MAJOR 7
+#define BUILD 1036
+#define MINOR 24
+#define MAJOR 28
 
 #endif
