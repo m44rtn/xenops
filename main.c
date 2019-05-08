@@ -52,6 +52,7 @@ void help();
 void arguments_parse(unsigned int nargs, char *arguments[]);
 void parse_file(FILE *file);
 int do_the_trick(long ver_num);
+void write_to_file(FILE *file, long line_size, char file_line[512]);
 
 
 typedef struct
@@ -60,8 +61,7 @@ typedef struct
     char *prefix; 
 
     unsigned int flags;
-    unsigned int offset;
-    
+        
     size_t prefix_len;
 } tARG_INFO;
 
@@ -76,6 +76,7 @@ tARG_INFO argument_info;
 
 void help()
 {
+    /* help screen */
     printf("usage: xenops --file [file-loc] (--prefix [prefix] --major --minor --build)\n\n\n");
     printf("%s\t\t\t\tlet's me know which file to use\n", ARG_FILE_LOC);
     printf("\n%s\t\t\t\tthis let's me know I should increment the major version number as well\n", ARG_CHNG_MAJOR);
@@ -91,7 +92,6 @@ int main(unsigned int nargs, char* args[])
     /* set the argument_info struct up in such a way we can detect errors */
     argument_info.file          = NULL;
     argument_info.flags         = FLAG_BUILD;
-    argument_info.offset        = 0;           /* this is where do_the_trick() starts searching for major/minor/build */
     argument_info.prefix_len    = 0;
 
     /* parse the arguments (it probably isn't called 'parsing', but I'll use the word anyway*/
@@ -166,85 +166,38 @@ void arguments_parse(unsigned int nargs, char *arguments[])
 
 void parse_file(FILE *file)
 {
-    tDATA data[3];
-    int *file_ptr = (int *) file;
-
-    fseek(file, 0, SEEK_END);
-
-    long file_size = ftell(file);
-
-    fseek(file, 0, SEEK_SET);
-    /*fseek(file, argument_info.offset, SEEK_CUR);*/
-
-    char file_str[512];
-    char *original_str_ptr;
-    
     const int define_length = argument_info.prefix_len + 5;
-
-    char define[7], type[define_length];
+    char file_str[512], define[7], type[define_length];
     long nver;
-
-    char *str1, *str2, *str3;
 
     /* There is probably a better way to do this */
     int i = 0;
 
     while(fgets(file_str, 512, file) != 0)
     {
-        
         size_t line_len = strlen(file_str);
-
         int ignore = sscanf(file_str, "%s %s %ld", define, type, &nver);
 
-        if(strcmp(define, "#define"))
+        /* if the current line doesn't start with #define or %define (assembly files) read the 
+            next line*/
+        if(strcmp(define, "#define") || strcmp(define, "%define"))
             continue;
         
-        if(!strcmp(&type[argument_info.prefix_len], "BUILD") && (argument_info.flags & FLAG_BUILD))
-        {
-            printf("Changed BUILD ");
-            nver = do_the_trick(nver);
-            strcpy(data[i].str, file_str);
-            ignore = sprintf(data[i].str, "%s %s %ld\n", define, type, nver);
-            data[i].line_size = line_len;
-            fseek(file, -(data[i].line_size), SEEK_CUR);
-            fputs(data[i].str, file);
-            i++; 
-        }
-        if(!strcmp(&type[argument_info.prefix_len], "MINOR") && (argument_info.flags & FLAG_MINOR))
-        {
-            printf("Changed MINOR ");
-            nver = do_the_trick(nver);
-            strcpy(data[i].str, file_str);
-            ignore = sprintf(data[i].str, "%s %s %ld\n", define, type, nver);
-            data[i].line_size = line_len;
-            fseek(file, -(data[i].line_size), SEEK_CUR);
-            fputs(data[i].str, file);
-            i++;
-        }
-        if(!strcmp(&type[argument_info.prefix_len], "MAJOR") && (argument_info.flags & FLAG_MAJOR))
-        {
-            printf("Changed MAJOR ");
-            nver = do_the_trick(nver);
-            strcpy(data[i].str, file_str);
-            ignore = sprintf(data[i].str, "%s %s %ld\n", define, type, nver);
-            data[i].line_size = line_len;
-            fseek(file, -(data[i].line_size), SEEK_CUR);
-            fputs(data[i].str, file);
-            
-        }
+        /* check if the current line is either the BUILD/MINOR/MAJOR and if the flag for
+            it is set*/
+        long isBuild = !strcmp(&type[argument_info.prefix_len], "BUILD") && (argument_info.flags & FLAG_BUILD);
+        long isMinor = !strcmp(&type[argument_info.prefix_len], "MINOR") && (argument_info.flags & FLAG_MINOR);
+        long isMajor = !strcmp(&type[argument_info.prefix_len], "MAJOR") && (argument_info.flags & FLAG_MAJOR);
 
-        
+        /* if it is, change it */
+        if(isBuild || isMinor || isMajor)
+        {
+            printf("Changed %s ", &type);
+            nver = do_the_trick(nver);
+            ignore = sprintf(file_str, "%s %s %ld\n", define, type, nver);
+            write_to_file(file, line_len, file_str); 
+        }
     }
-
-    for(i; i > 0; i--)
-    {
-        /* let it store the stuff? */
-        
-    }
-    
-    
-    /*fseek(file, 0, SEEK_SET);
-    fwrite(original_str_ptr, file_size, 1, file);*/
 }
 
 int do_the_trick(long ver_num)
@@ -254,3 +207,8 @@ int do_the_trick(long ver_num)
     return ver_num;
 }
 
+void write_to_file(FILE *file, long line_size, char file_line[512])
+{    
+    fseek(file, -(line_size), SEEK_CUR);
+    fputs(file_line, file);
+}
