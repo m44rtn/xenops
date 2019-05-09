@@ -51,7 +51,7 @@ SOFTWARE.*/
 void help();
 void arguments_parse(unsigned int nargs, char *arguments[]);
 void parse_file(FILE *file);
-int do_the_trick(long ver_num);
+long do_the_trick(long ver_num);
 void write_to_file(FILE *file, long line_size, char file_line[512]);
 
 
@@ -65,14 +65,8 @@ typedef struct
     size_t prefix_len;
 } tARG_INFO;
 
-typedef struct 
-{
-    char str[512];
-    int line_size;
-} tDATA;
-
-
 tARG_INFO argument_info;
+
 
 void help()
 {
@@ -110,7 +104,6 @@ int main(unsigned int nargs, char* args[])
     {   
         /* set the color to red, announce it's an error and use the default color again */
         printf("\n\033[0;31mError:\033[0m No input file specified\nUse xenops --help for help\n\n"); 
-
         return ERROR_NO_FILE;
     }
     
@@ -120,7 +113,7 @@ int main(unsigned int nargs, char* args[])
     /* did the file exist? */
     if(file == NULL)
     {   
-        printf("\n\033[0;31mError:\033[0m File does not exist\n\n"); 
+        printf("\n\033[0;31mError:\033[0m Input file does not exist\n\n"); 
         return ERROR_FILE_NOT_EXIST;
     }
 
@@ -136,23 +129,18 @@ void arguments_parse(unsigned int nargs, char *arguments[])
     unsigned int i = 0;
     for(i; i < nargs; i++)
     {
-        /* strcmp() returns 0 if the strings are identical */
-
+        /* if one of the arguments is the help command then set the 
+            help flag */
        if(!strcmp(arguments[i], ARG_HELP)) 
-            argument_info.flags |= FLAG_HELP;
+            argument_info.flags = FLAG_HELP;
     
-
         /* if the arguments contain a file location, store it */
         else if(!strcmp(arguments[i], ARG_FILE_LOC))
             argument_info.file = arguments[i + 1];
         
         /* store the prefix */
         else if(!strcmp(arguments[i], ARG_PREFIX))
-        {
-            argument_info.prefix = arguments[i + 1];
-            argument_info.prefix_len = strlen(argument_info.prefix);
-        }
-            
+            argument_info.prefix_len = strlen(argument_info.prefix);            
         
         /* look what needs to be changed within the file */
         else if(!strcmp(arguments[i], ARG_CHNG_BUILD))
@@ -160,9 +148,7 @@ void arguments_parse(unsigned int nargs, char *arguments[])
         else if(!strcmp(arguments[i], ARG_CHNG_MINOR))
             argument_info.flags |= FLAG_MINOR;
         else if(!strcmp(arguments[i], ARG_CHNG_MAJOR))
-            argument_info.flags |= FLAG_MAJOR; 
-        /*todo: when xenops can do both, OR these values */
-           
+            argument_info.flags |= FLAG_MAJOR;            
     }
 }
 
@@ -173,9 +159,7 @@ void parse_file(FILE *file)
     long nver;
 
     /* There is probably a better way to do this */
-    int i = 0;
-
-    while(fgets(file_str, 512, file) != 0)
+        while(fgets(file_str, 512, file) != 0)
     {
         size_t line_len = strlen(file_str);
         int ignore = sscanf(file_str, "%s %s %ld", define, type, &nver);
@@ -202,7 +186,7 @@ void parse_file(FILE *file)
     }
 }
 
-int do_the_trick(long ver_num)
+long do_the_trick(long ver_num)
 {
     ver_num++;
     printf("to %ld\n", ver_num);
