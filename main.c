@@ -72,12 +72,12 @@ void help()
 {
     /* help screen */
     printf("usage: xenops --file [file-loc] (--prefix [prefix] --major --minor --build)\n\n\n");
-    printf("%s\t\t\t\tlet's me know which file to use\n", ARG_FILE_LOC);
-    printf("\n%s\t\t\t\tthis let's me know I should increment the major version number as well\n", ARG_CHNG_MAJOR);
-    printf("%s\t\t\t\tthis let's me know I should increment the minor version number as well\n", ARG_CHNG_MAJOR);
-    printf("%s\t\t\t\t(default) this let's me know I should increment the build version number as well\n", ARG_CHNG_MAJOR);
+    printf("%s\t\t\t\tLets me know which file to use\n", ARG_FILE_LOC);
+    printf("\n%s\t\t\t\tThis lets me know I should increment the major version number as well\n", ARG_CHNG_MAJOR);
+    printf("%s\t\t\t\tThis lets me know I should increment the minor version number as well\n", ARG_CHNG_MAJOR);
+    printf("%s\t\t\t\t(default) This lets me know I should increment the build version number as well\n", ARG_CHNG_MAJOR);
 
-    printf("\n%s [prefix]\t\tthis let's me know if there's something in front of major/minor/build (for example VER_BUILD instead of BUILD)\n", ARG_PREFIX);
+    printf("\n%s [prefix]\t\tThis lets me know if there's something in front of major/minor/build (for example VER_BUILD instead of BUILD)\n", ARG_PREFIX);
     
 }
 
@@ -164,13 +164,11 @@ void parse_file(FILE *file)
         size_t line_len = strlen(file_str);
         int ignore = sscanf(file_str, "%s %s %ld", define, type, &nver);
 
-        /* if the current line doesn't start with #define read the 
-            next line*/
-        if(strcmp(define, "#define") )
+        /* if the current line doesn't start with #define or %define read the next line*/
+        if(strcmp(define, "#define") && strcmp(define, "%define"))
             continue;
-        
-        /* check if the current line is either the BUILD/MINOR/MAJOR and if the flag for
-            it is set*/
+
+        /* check if the current line is either the BUILD/MINOR/MAJOR and if the flag for it is set*/
         long isBuild = !strcmp(&type[argument_info.prefix_len], "BUILD") && (argument_info.flags & FLAG_BUILD);
         long isMinor = !strcmp(&type[argument_info.prefix_len], "MINOR") && (argument_info.flags & FLAG_MINOR);
         long isMajor = !strcmp(&type[argument_info.prefix_len], "MAJOR") && (argument_info.flags & FLAG_MAJOR);
