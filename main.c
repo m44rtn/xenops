@@ -53,6 +53,8 @@ void arguments_parse(unsigned int nargs, char *arguments[]);
 void parse_file(FILE *file);
 long do_the_trick(long ver_num);
 void write_to_file(FILE *file, long line_size, char file_line[512]);
+void GrowFile(FILE *file);
+int DigitCount(long value);
 
 
 typedef struct
@@ -177,6 +179,11 @@ void parse_file(FILE *file)
         /* if it is, change it */
         if(isBuild || isMinor || isMajor)
         {
+
+            /* If incrementing the value will cause it to gain a digit in length, we need to grow the file to avoid overwriting data. */
+            if (DigitCount(nver) != DigitCount(nver + 1))
+                GrowFile(file);
+
             printf("Changed %s ", type);
             nver = do_the_trick(nver);
             ignore = sprintf(file_str, "%s %s %ld\n", define, type, nver);
@@ -196,4 +203,80 @@ void write_to_file(FILE *file, long line_size, char file_line[512])
 {    
     fseek(file, -(line_size), SEEK_CUR);
     fputs(file_line, file);
+}
+
+void GrowFile(FILE *file)
+{
+    /* inserts a byte into the file specified at the location specified */
+
+    int ignore;
+    long initialFilePosition, readFilePosition, stopFilePosition, writeFilePosition;
+    unsigned char currentByte;
+
+    initialFilePosition = ftell(file);
+    stopFilePosition = initialFilePosition - 3;
+    fseek(file, 0, SEEK_END);
+    readFilePosition = ftell(file);
+    writeFilePosition = readFilePosition;
+    readFilePosition--;
+
+    /* a loop to expand the rest of the file down by one byte */
+    while (stopFilePosition < readFilePosition)
+    {
+        fseek(file, readFilePosition, SEEK_SET);
+        currentByte = fgetc(file);
+
+        fseek(file, writeFilePosition, SEEK_SET);
+        ignore = fputc(currentByte, file);
+        readFilePosition--;
+        writeFilePosition--;
+    }
+
+    /* reset the original file position before we leave */
+    fseek(file, initialFilePosition, SEEK_SET);
+}
+
+int DigitCount(long value)
+{
+    /* a function to return how many digits are in the value passed */
+
+    int returnValue;
+
+
+    if (value >= 0 && value <= 9)
+    {
+        returnValue = 1;
+    }
+
+    if (value >= 10 && value <= 99)
+    {
+        returnValue = 2;
+    }
+
+    if (value >= 100 && value <= 999)
+    {
+        returnValue = 3;
+    }
+
+    if (value >= 1000 && value <= 9999)
+    {
+        returnValue = 4;
+    }
+
+    if (value >= 10000 && value <= 99999)
+    {
+        returnValue = 5;
+    }
+
+    if (value >= 100000 && value <= 999999)
+    {
+        returnValue = 6;
+    }
+
+    if (value >= 1000000 && value <= 9999999)
+    {
+        returnValue = 7;
+    }
+
+    return returnValue;
 }
