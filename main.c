@@ -81,7 +81,7 @@ void help()
     
 }
 
-int main(unsigned int nargs, char* args[])
+int main(unsigned int nargs, char *args[])
 {
     /* set the argument_info struct up in such a way we can detect errors */
     argument_info.file          = NULL;
@@ -106,7 +106,7 @@ int main(unsigned int nargs, char* args[])
         printf("\n\033[0;31mError:\033[0m No input file specified\nUse xenops --help for help\n\n"); 
         return ERROR_NO_FILE;
     }
-    
+
     /* now we can open the file */
     FILE *file = fopen(argument_info.file, "r+");
 
@@ -124,7 +124,7 @@ int main(unsigned int nargs, char* args[])
     return 0;
 }
 
-void arguments_parse(unsigned int nargs, char *arguments[])
+void arguments_parse(unsigned int nargs, char* arguments[])
 {
     unsigned int i = 0;
     for(i; i < nargs; i++)
@@ -154,18 +154,19 @@ void arguments_parse(unsigned int nargs, char *arguments[])
 
 void parse_file(FILE *file)
 {
-    const int define_length = argument_info.prefix_len + 5;
-    char file_str[512], define[7], type[define_length];
+    char file_str[512], define[512], type[512];
+    int ignore;
     long nver;
+    size_t line_len;
 
     /* There is probably a better way to do this */
-        while(fgets(file_str, 512, file) != 0)
+        while(fgets(file_str, 512, file))
     {
-        size_t line_len = strlen(file_str);
-        int ignore = sscanf(file_str, "%s %s %ld", define, type, &nver);
+        line_len = strlen(file_str);
+        ignore = sscanf(file_str, "%s %s %ld", define, type, &nver);
 
-        /* if the current line doesn't start with #define or %define read the next line*/
-        if(strcmp(define, "#define") && strcmp(define, "%define"))
+        /* if we didn't fill enough variables, we may as well cut it short RIGHT NOW! :) */
+        if (ignore < 3)
             continue;
 
         /* check if the current line is either the BUILD/MINOR/MAJOR and if the flag for it is set*/
