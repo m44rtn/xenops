@@ -1,8 +1,8 @@
 # Xenops
 
-Xenops is a tool that can help with incrementing the version number in a file for your project. It assumes the file uses the C standard for defining values `#define NAME <value>` but it doesn't matter if it's actually a C file or not (a txt file for example, would work too).
+Xenops is a tool that can help with incrementing the version number in a file for your project. Xenops supports multiple define standards, such as the C `#define` but also the assembly `%define`, since [commit 3a59cad](https://github.com/m44rtn/xenops/commit/3a59cade2cd184dc7363db343e27151ef0b66a01).
 
-This tool is written for the Linux terminal.
+This tool is written for the Linux terminal, but Microsoft's WSL will probably work too.
 
 
 ## What it can change

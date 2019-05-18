@@ -162,7 +162,7 @@ void parse_file(FILE *file)
     size_t line_len;
 
     /* There is probably a better way to do this */
-        while(fgets(file_str, 512, file))
+    while(fgets(file_str, 512, file))
     {
         line_len = strlen(file_str);
         ignore = sscanf(file_str, "%s %s %ld", define, type, &nver);
