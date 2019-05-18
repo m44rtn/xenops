@@ -53,6 +53,8 @@ void arguments_parse(unsigned int nargs, char *arguments[]);
 void parse_file(FILE *file);
 long do_the_trick(long ver_num);
 void write_to_file(FILE *file, long line_size, char file_line[512]);
+void GrowFile(FILE *file);
+int DigitCount(long value);
 
 
 typedef struct
@@ -72,16 +74,16 @@ void help()
 {
     /* help screen */
     printf("usage: xenops --file [file-loc] (--prefix [prefix] --major --minor --build)\n\n\n");
-    printf("%s\t\t\t\tlet's me know which file to use\n", ARG_FILE_LOC);
-    printf("\n%s\t\t\t\tthis let's me know I should increment the major version number as well\n", ARG_CHNG_MAJOR);
-    printf("%s\t\t\t\tthis let's me know I should increment the minor version number as well\n", ARG_CHNG_MAJOR);
-    printf("%s\t\t\t\t(default) this let's me know I should increment the build version number as well\n", ARG_CHNG_MAJOR);
+    printf("%s\t\t\t\tLets me know which file to use\n", ARG_FILE_LOC);
+    printf("\n%s\t\t\t\tThis lets me know I should increment the major version number as well\n", ARG_CHNG_MAJOR);
+    printf("%s\t\t\t\tThis lets me know I should increment the minor version number as well\n", ARG_CHNG_MINOR);
+    printf("%s\t\t\t\t(default) This lets me know I should increment the build version number as well\n", ARG_CHNG_BUILD);
 
-    printf("\n%s [prefix]\t\tthis let's me know if there's something in front of major/minor/build (for example VER_BUILD instead of BUILD)\n", ARG_PREFIX);
+    printf("\n%s [prefix]\t\tThis lets me know if there's something in front of major/minor/build (for example VER_BUILD instead of BUILD)\n", ARG_PREFIX);
     
 }
 
-int main(unsigned int nargs, char* args[])
+int main(unsigned int nargs, char *args[])
 {
     /* set the argument_info struct up in such a way we can detect errors */
     argument_info.file          = NULL;
@@ -106,7 +108,7 @@ int main(unsigned int nargs, char* args[])
         printf("\n\033[0;31mError:\033[0m No input file specified\nUse xenops --help for help\n\n"); 
         return ERROR_NO_FILE;
     }
-    
+
     /* now we can open the file */
     FILE *file = fopen(argument_info.file, "r+");
 
@@ -124,7 +126,7 @@ int main(unsigned int nargs, char* args[])
     return 0;
 }
 
-void arguments_parse(unsigned int nargs, char *arguments[])
+void arguments_parse(unsigned int nargs, char* arguments[])
 {
     unsigned int i = 0;
     for(i; i < nargs; i++)
@@ -154,23 +156,22 @@ void arguments_parse(unsigned int nargs, char *arguments[])
 
 void parse_file(FILE *file)
 {
-    const int define_length = argument_info.prefix_len + 5;
-    char file_str[512], define[7], type[define_length];
+    char file_str[512], define[512], type[512];
+    int ignore;
     long nver;
+    size_t line_len;
 
     /* There is probably a better way to do this */
-        while(fgets(file_str, 512, file) != 0)
+        while(fgets(file_str, 512, file))
     {
-        size_t line_len = strlen(file_str);
-        int ignore = sscanf(file_str, "%s %s %ld", define, type, &nver);
+        line_len = strlen(file_str);
+        ignore = sscanf(file_str, "%s %s %ld", define, type, &nver);
 
-        /* if the current line doesn't start with #define read the 
-            next line*/
-        if(strcmp(define, "#define") )
+        /* if we didn't fill enough variables, we may as well cut it short RIGHT NOW! :) */
+        if (ignore < 3)
             continue;
-        
-        /* check if the current line is either the BUILD/MINOR/MAJOR and if the flag for
-            it is set*/
+
+        /* check if the current line is either the BUILD/MINOR/MAJOR and if the flag for it is set*/
         long isBuild = !strcmp(&type[argument_info.prefix_len], "BUILD") && (argument_info.flags & FLAG_BUILD);
         long isMinor = !strcmp(&type[argument_info.prefix_len], "MINOR") && (argument_info.flags & FLAG_MINOR);
         long isMajor = !strcmp(&type[argument_info.prefix_len], "MAJOR") && (argument_info.flags & FLAG_MAJOR);
@@ -178,6 +179,11 @@ void parse_file(FILE *file)
         /* if it is, change it */
         if(isBuild || isMinor || isMajor)
         {
+
+            /* If incrementing the value will cause it to gain a digit in length, we need to grow the file to avoid overwriting data. */
+            if (DigitCount(nver) != DigitCount(nver + 1))
+                GrowFile(file);
+
             printf("Changed %s ", type);
             nver = do_the_trick(nver);
             ignore = sprintf(file_str, "%s %s %ld\n", define, type, nver);
@@ -197,4 +203,80 @@ void write_to_file(FILE *file, long line_size, char file_line[512])
 {    
     fseek(file, -(line_size), SEEK_CUR);
     fputs(file_line, file);
+}
+
+void GrowFile(FILE *file)
+{
+    /* inserts a byte into the file specified at the location specified */
+
+    int ignore;
+    long initialFilePosition, readFilePosition, stopFilePosition, writeFilePosition;
+    unsigned char currentByte;
+
+    initialFilePosition = ftell(file);
+    stopFilePosition = initialFilePosition - 3;
+    fseek(file, 0, SEEK_END);
+    readFilePosition = ftell(file);
+    writeFilePosition = readFilePosition;
+    readFilePosition--;
+
+    /* a loop to expand the rest of the file down by one byte */
+    while (stopFilePosition < readFilePosition)
+    {
+        fseek(file, readFilePosition, SEEK_SET);
+        currentByte = fgetc(file);
+
+        fseek(file, writeFilePosition, SEEK_SET);
+        ignore = fputc(currentByte, file);
+        readFilePosition--;
+        writeFilePosition--;
+    }
+
+    /* reset the original file position before we leave */
+    fseek(file, initialFilePosition, SEEK_SET);
+}
+
+int DigitCount(long value)
+{
+    /* a function to return how many digits are in the value passed */
+
+    int returnValue;
+
+
+    if (value >= 0 && value <= 9)
+    {
+        returnValue = 1;
+    }
+
+    if (value >= 10 && value <= 99)
+    {
+        returnValue = 2;
+    }
+
+    if (value >= 100 && value <= 999)
+    {
+        returnValue = 3;
+    }
+
+    if (value >= 1000 && value <= 9999)
+    {
+        returnValue = 4;
+    }
+
+    if (value >= 10000 && value <= 99999)
+    {
+        returnValue = 5;
+    }
+
+    if (value >= 100000 && value <= 999999)
+    {
+        returnValue = 6;
+    }
+
+    if (value >= 1000000 && value <= 9999999)
+    {
+        returnValue = 7;
+    }
+
+    return returnValue;
 }
