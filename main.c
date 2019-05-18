@@ -74,8 +74,8 @@ void help()
     printf("usage: xenops --file [file-loc] (--prefix [prefix] --major --minor --build)\n\n\n");
     printf("%s\t\t\t\tLets me know which file to use\n", ARG_FILE_LOC);
     printf("\n%s\t\t\t\tThis lets me know I should increment the major version number as well\n", ARG_CHNG_MAJOR);
-    printf("%s\t\t\t\tThis lets me know I should increment the minor version number as well\n", ARG_CHNG_MAJOR);
-    printf("%s\t\t\t\t(default) This lets me know I should increment the build version number as well\n", ARG_CHNG_MAJOR);
+    printf("%s\t\t\t\tThis lets me know I should increment the minor version number as well\n", ARG_CHNG_MINOR);
+    printf("%s\t\t\t\t(default) This lets me know I should increment the build version number as well\n", ARG_CHNG_BUILD);
 
     printf("\n%s [prefix]\t\tThis lets me know if there's something in front of major/minor/build (for example VER_BUILD instead of BUILD)\n", ARG_PREFIX);
     
