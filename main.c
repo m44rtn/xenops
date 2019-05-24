@@ -215,9 +215,12 @@ void GrowFile(FILE *file)
 
     initialFilePosition = ftell(file);
     stopFilePosition = initialFilePosition - 3;
+
     fseek(file, 0, SEEK_END);
+
     readFilePosition = ftell(file);
     writeFilePosition = readFilePosition;
+
     readFilePosition--;
 
     /* a loop to expand the rest of the file down by one byte */
@@ -228,6 +231,7 @@ void GrowFile(FILE *file)
 
         fseek(file, writeFilePosition, SEEK_SET);
         ignore = fputc(currentByte, file);
+        
         readFilePosition--;
         writeFilePosition--;
     }
