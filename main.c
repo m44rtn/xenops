@@ -215,7 +215,6 @@ int digit_count(long value)
         retval++;
 
     return retval;  
-    
 }
 
 void GrowFile(FILE *file)
