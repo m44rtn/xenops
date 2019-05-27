@@ -53,9 +53,8 @@ void arguments_parse(unsigned int nargs, char *arguments[]);
 void parse_file(FILE *file);
 long do_the_trick(long ver_num);
 void write_to_file(FILE *file, long line_size, char file_line[512]);
+int digit_count(long value);
 void GrowFile(FILE *file);
-int DigitCount(long value);
-
 
 typedef struct
 {
@@ -90,16 +89,16 @@ int main(unsigned int nargs, char *args[])
     argument_info.flags         = 0;
     argument_info.prefix_len    = 0;
 
-    /* parse the arguments (it probably isn't called 'parsing', but I'll use the word anyway*/
+    /* parse the arguments (it probably isn't called 'parsing', but I'll use the word anyway) */
     arguments_parse((nargs - 1), &args[1]);
 
-    if(argument_info.flags == 0) argument_info.flags = FLAG_BUILD;
-
-    if((argument_info.flags & FLAG_HELP))
+     if((argument_info.flags & FLAG_HELP))
     {
         help();
         return 0;
     }
+
+    if(argument_info.flags == 0) argument_info.flags = FLAG_BUILD;
 
     /* did we get a file? */
     if(argument_info.file == NULL)
@@ -181,8 +180,8 @@ void parse_file(FILE *file)
         {
 
             /* If incrementing the value will cause it to gain a digit in length, we need to grow the file to avoid overwriting data. */
-            if (DigitCount(nver) != DigitCount(nver + 1))
-                GrowFile(file);
+            if (digit_count(nver) != digit_count(nver + 1))
+               GrowFile(file);
 
             printf("Changed %s ", type);
             nver = do_the_trick(nver);
@@ -203,6 +202,20 @@ void write_to_file(FILE *file, long line_size, char file_line[512])
 {    
     fseek(file, -(line_size), SEEK_CUR);
     fputs(file_line, file);
+}
+
+int digit_count(long value)
+{
+    /* a function like DigitCount() by mercury0x000d (see commit 1b7b4d6)
+        but shorter in size*/
+
+    int retval = 1;
+    
+    while(!((value /= 10) < 10))
+        retval++;
+
+    return retval;  
+    
 }
 
 void GrowFile(FILE *file)
@@ -238,49 +251,4 @@ void GrowFile(FILE *file)
 
     /* reset the original file position before we leave */
     fseek(file, initialFilePosition, SEEK_SET);
-}
-
-int DigitCount(long value)
-{
-    /* a function to return how many digits are in the value passed */
-
-    int returnValue;
-
-
-    if (value >= 0 && value <= 9)
-    {
-        returnValue = 1;
-    }
-
-    if (value >= 10 && value <= 99)
-    {
-        returnValue = 2;
-    }
-
-    if (value >= 100 && value <= 999)
-    {
-        returnValue = 3;
-    }
-
-    if (value >= 1000 && value <= 9999)
-    {
-        returnValue = 4;
-    }
-
-    if (value >= 10000 && value <= 99999)
-    {
-        returnValue = 5;
-    }
-
-    if (value >= 100000 && value <= 999999)
-    {
-        returnValue = 6;
-    }
-
-    if (value >= 1000000 && value <= 9999999)
-    {
-        returnValue = 7;
-    }
-
-    return returnValue;
 }

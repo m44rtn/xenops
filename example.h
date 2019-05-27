@@ -3,7 +3,7 @@
 #ifndef EXAMPLE_H
 #define EXAMPLE_H
 
-#define BUILD 1036
+#define BUILD 1000
 #define MINOR 24
 #define MAJOR 28
 
