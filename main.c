@@ -68,7 +68,6 @@ typedef struct
 
 tARG_INFO argument_info;
 
-
 void help()
 {
     /* help screen */
@@ -185,7 +184,7 @@ void parse_file(FILE *file)
 
             printf("Changed %s ", type);
             nver = do_the_trick(nver);
-            ignore = sprintf(file_str, "%s %s %ld\n", define, type, nver);
+            ignore = sprintf(file_str, "%s %s %ld", define, type, nver);
             write_to_file(file, line_len, file_str); 
         }
     }
@@ -199,7 +198,7 @@ long do_the_trick(long ver_num)
 }
 
 void write_to_file(FILE *file, long line_size, char file_line[512])
-{    
+{
     fseek(file, -(line_size), SEEK_CUR);
     fputs(file_line, file);
 }
