@@ -23,9 +23,9 @@ You can use the makefile to build the source. Just use
 You can now use xenops in it's current directory using
 `./xenops [commands]`
 
-Additionally, if you'd like to be able to use it anywhere, you can put it in a folder and edit home/username/.bashrc
+Additionally, if you'd like to be able to use it anywhere, you can put it in a folder and edit `home/username/.[shell_name]rc`
 to include the folder. For example, say you have xenops in a folder `home/username/custom_bin`
-and you'd like to be able to run it anywhere you can add the following line to the .bashrc file in your home directory:
+and you'd like to be able to run it anywhere you can add the following line to the .[shell_name]rc file in your home directory:
 `PATH=$PATH:/home/username/custom_bin`. After doing this, you can run xenops from any directory using
 `xenops [commands]`.
 
