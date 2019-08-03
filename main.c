@@ -30,19 +30,20 @@ SOFTWARE.*/
 
 #define ARG_HELP                "--help"    /* guess what this does */
 
+#define ARG_QUIET               "--quiet"   /* shuts xenops up */
+
 #define ARG_PREFIX              "--prefix"  /* prefix to the major/minor/build numbers in the file */
 
 #define ARG_CHNG_MAJOR          "--major"   /* change major version number */
 #define ARG_CHNG_MINOR          "--minor"   /* change minor version number */
 #define ARG_CHNG_BUILD          "--build"   /* change build version number (default) */
 
-
-
 #define FLAG_BUILD              1
 #define FLAG_MINOR              1 << 2
 #define FLAG_MAJOR              1 << 3
 
 #define FLAG_HELP               1 << 4  /* this makes sure we can check if help has been called (for the error checking 'n such) */
+#define FLAG_QUIET              1 << 5  /* The quiet option means no output to the shell */
 
 /* maybe these aren't really necessary... */
 #define ERROR_NO_FILE           1
@@ -78,6 +79,10 @@ void help()
     printf("%s\t\t\t\t(default) This lets me know I should increment the build version number as well\n", ARG_CHNG_BUILD);
 
     printf("\n%s [prefix]\t\tThis lets me know if there's something in front of major/minor/build (for example VER_BUILD instead of BUILD)\n", ARG_PREFIX);
+
+    printf("%s\t\t\t\tXenops won't output any text to the shell\n", ARG_QUIET);
+
+    
     
 }
 
@@ -148,7 +153,10 @@ void arguments_parse(unsigned int nargs, char* arguments[])
         else if(!strcmp(arguments[i], ARG_CHNG_MINOR))
             argument_info.flags |= FLAG_MINOR;
         else if(!strcmp(arguments[i], ARG_CHNG_MAJOR))
-            argument_info.flags |= FLAG_MAJOR;            
+            argument_info.flags |= FLAG_MAJOR;     
+
+        else if(!strcmp(arguments[i], ARG_QUIET))
+            argument_info.flags |= FLAG_QUIET;       
     }
 }
 
@@ -182,7 +190,7 @@ void parse_file(FILE *file)
             if (digit_count(nver) != digit_count(nver + 1))
                GrowFile(file);
 
-            printf("Changed %s ", type);
+            if(!(argument_info.flags & FLAG_QUIET)) printf("Changed %s ", type);
             nver = do_the_trick(nver);
             ignore = sprintf(file_str, "%s %s %ld", define, type, nver);
             write_to_file(file, line_len, file_str); 
@@ -193,7 +201,9 @@ void parse_file(FILE *file)
 long do_the_trick(long ver_num)
 {
     ver_num++;
-    printf("to %ld\n", ver_num);
+
+    if(!(argument_info.flags & FLAG_QUIET)) printf("to %ld\n", ver_num);
+    
     return ver_num;
 }
 
