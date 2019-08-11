@@ -102,7 +102,9 @@ int main(unsigned int nargs, char *args[])
         return 0;
     }
 
-    if(argument_info.flags == 0) argument_info.flags = FLAG_BUILD;
+    /* 0x1F fixes a bug: it makes sure FLAG_QUIET is ignored. Otherwise it causes a problem where when you don't
+    specify any other commands (ARG_BUILD etc.) with it, it wouldn't auto-search and change the BUILD and nothing would be altered. */
+    if((argument_info.flags & 0x1F) == 0) argument_info.flags = FLAG_BUILD;
 
     /* did we get a file? */
     if(argument_info.file == NULL)
@@ -190,20 +192,18 @@ void parse_file(FILE *file)
             if (digit_count(nver) != digit_count(nver + 1))
                GrowFile(file);
 
-            if(!(argument_info.flags & FLAG_QUIET)) printf("Changed %s ", type);
             nver = do_the_trick(nver);
             ignore = sprintf(file_str, "%s %s %ld", define, type, nver);
             write_to_file(file, line_len, file_str); 
+
+            if((argument_info.flags & FLAG_QUIET) != FLAG_QUIET) printf("Changed %s to %ld\n", type, nver);
         }
     }
 }
 
 long do_the_trick(long ver_num)
 {
-    ver_num++;
-
-    if(!(argument_info.flags & FLAG_QUIET)) printf("to %ld\n", ver_num);
-    
+    ver_num++;    
     return ver_num;
 }
 
