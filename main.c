@@ -215,9 +215,6 @@ void write_to_file(FILE *file, long line_size, char file_line[512])
 
 int digit_count(long value)
 {
-    /* a function like DigitCount() by mercury0x000d (see commit 1b7b4d6)
-        but shorter in size*/
-
     int retval = 1;
     
     while(!((value /= 10) < 10))
