@@ -96,6 +96,7 @@ void help()
     printf("\n(%s, %s) [prefix]\t\tThis lets me know if there's something in front of major/minor/build (for example VER_BUILD instead of BUILD)\n", ARG_PREFIX_S, ARG_PREFIX_L);
 
     printf("%s, %s\t\t\t\tXenops won't output any text to the shell\n", ARG_QUIET_S, ARG_QUIET_L);
+    printf("%s, %s\t\t\t\tShow version number\n", ARG_VERSION_S, ARG_VERSION_L);
 }
 
 void version()
