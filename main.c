@@ -26,7 +26,9 @@ SOFTWARE.*/
 #include <string.h>
 #include <stdlib.h>
 
+/* Note to self: reset minor to 0 with every major number */
 #define XENOPS_VERSION_MAJOR 3
+#define XENOPS_VERSION_MINOR 2
 #define XENOPS_RELEASE_YEAR  2020
 
 #define ARG_FILE_LOC_L            "--file"    /* location of the file containing the versioning */
@@ -101,7 +103,7 @@ void help()
 
 void version()
 {
-    printf("\nXenops %i Copyright (c) %i - MIT Licensed\n\n", XENOPS_VERSION_MAJOR, XENOPS_RELEASE_YEAR);
+    printf("\nXenops %i Mark %i\nCopyright (c) %i - MIT Licensed\n\n", XENOPS_VERSION_MAJOR, XENOPS_VERSION_MINOR, XENOPS_RELEASE_YEAR);
 }
 
 int main(unsigned int nargs, char *args[])
