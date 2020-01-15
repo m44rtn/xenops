@@ -1,6 +1,6 @@
 /* MIT License:
 
-Copyright (c) 2019 Maarten Vermeulen
+Copyright (c) 2020 Maarten Vermeulen
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,17 +26,31 @@ SOFTWARE.*/
 #include <string.h>
 #include <stdlib.h>
 
-#define ARG_FILE_LOC            "--file"    /* location of the file containing the versioning */
+#define XENOPS_VERSION_MAJOR 3
+#define XENOPS_RELEASE_YEAR  2020
 
-#define ARG_HELP                "--help"    /* guess what this does */
+#define ARG_FILE_LOC_L            "--file"    /* location of the file containing the versioning */
+#define ARG_FILE_LOC_S            "-f"    
 
-#define ARG_QUIET               "--quiet"   /* shuts xenops up */
+#define ARG_HELP_L                "--help"    /* guess what this does */
+#define ARG_HELP_S                "-h"
 
-#define ARG_PREFIX              "--prefix"  /* prefix to the major/minor/build numbers in the file */
+#define ARG_QUIET_L               "--quiet"   /* shuts xenops up */
+#define ARG_QUIET_S               "-q"  
 
-#define ARG_CHNG_MAJOR          "--major"   /* change major version number */
-#define ARG_CHNG_MINOR          "--minor"   /* change minor version number */
-#define ARG_CHNG_BUILD          "--build"   /* change build version number (default) */
+#define ARG_PREFIX_L              "--prefix"  /* prefix to the major/minor/build numbers in the file */
+#define ARG_PREFIX_S              "-p"
+
+#define ARG_VERSION_L		    "--version" /* the version of Xenops */
+#define ARG_VERSION_S		    "-v"
+
+#define ARG_CHNG_MAJOR_L          "--major"   /* change major version number */
+#define ARG_CHNG_MINOR_L          "--minor"   /* change minor version number */
+#define ARG_CHNG_BUILD_L          "--build"   /* change build version number (default) */
+
+#define ARG_CHNG_MAJOR_S          "-ma"   /* change major version number */
+#define ARG_CHNG_MINOR_S          "-mi"   /* change minor version number */
+#define ARG_CHNG_BUILD_S          "-b"   /* change build version number (default) */
 
 #define FLAG_BUILD              1
 #define FLAG_MINOR              1 << 2
@@ -44,6 +58,7 @@ SOFTWARE.*/
 
 #define FLAG_HELP               1 << 4  /* this makes sure we can check if help has been called (for the error checking 'n such) */
 #define FLAG_QUIET              1 << 5  /* The quiet option means no output to the shell */
+#define FLAG_VERSION            1 << 6  /* Shows the version of Xenops */
 
 /* maybe these aren't really necessary... */
 #define ERROR_NO_FILE           1
@@ -64,7 +79,7 @@ typedef struct
 
     unsigned int flags;
         
-    size_t prefix_len;
+    unsigned int prefix_len;
 } tARG_INFO;
 
 tARG_INFO argument_info;
@@ -73,17 +88,19 @@ void help()
 {
     /* help screen */
     printf("usage: xenops --file [file-loc] (--prefix [prefix] --major --minor --build)\n\n\n");
-    printf("%s\t\t\t\tLets me know which file to use\n", ARG_FILE_LOC);
-    printf("\n%s\t\t\t\tThis lets me know I should increment the major version number as well\n", ARG_CHNG_MAJOR);
-    printf("%s\t\t\t\tThis lets me know I should increment the minor version number as well\n", ARG_CHNG_MINOR);
-    printf("%s\t\t\t\t(default) This lets me know I should increment the build version number as well\n", ARG_CHNG_BUILD);
+    printf("%s, %s\t\t\t\tLets me know which file to use\n", ARG_FILE_LOC_S, ARG_FILE_LOC_L);
+    printf("\n%s, %s\t\t\t\tThis lets me know I should increment the major version number as well\n", ARG_CHNG_MAJOR_S, ARG_CHNG_MAJOR_L);
+    printf("%s, %s\t\t\t\tThis lets me know I should increment the minor version number as well\n", ARG_CHNG_MINOR_S, ARG_CHNG_MINOR_L);
+    printf("%s, %s\t\t\t\t(default) This lets me know I should increment the build version number as well\n", ARG_CHNG_BUILD_S, ARG_CHNG_BUILD_L);
 
-    printf("\n%s [prefix]\t\tThis lets me know if there's something in front of major/minor/build (for example VER_BUILD instead of BUILD)\n", ARG_PREFIX);
+    printf("\n(%s, %s) [prefix]\t\tThis lets me know if there's something in front of major/minor/build (for example VER_BUILD instead of BUILD)\n", ARG_PREFIX_S, ARG_PREFIX_L);
 
-    printf("%s\t\t\t\tXenops won't output any text to the shell\n", ARG_QUIET);
+    printf("%s, %s\t\t\t\tXenops won't output any text to the shell\n", ARG_QUIET_S, ARG_QUIET_L);
+}
 
-    
-    
+void version()
+{
+    printf("\nXenops %i Copyright (c) %i - MIT Licensed\n\n", XENOPS_VERSION_MAJOR, XENOPS_RELEASE_YEAR);
 }
 
 int main(unsigned int nargs, char *args[])
@@ -99,6 +116,11 @@ int main(unsigned int nargs, char *args[])
      if((argument_info.flags & FLAG_HELP))
     {
         help();
+        return 0;
+    }
+    else if((argument_info.flags & FLAG_VERSION))
+    {
+        version();
         return 0;
     }
 
@@ -138,26 +160,28 @@ void arguments_parse(unsigned int nargs, char* arguments[])
     {
         /* if one of the arguments is the help command then set the 
             help flag */
-       if(!strcmp(arguments[i], ARG_HELP)) 
+       if(!strcmp(arguments[i], ARG_HELP_L) || !strcmp(arguments[i], ARG_HELP_S)) 
             argument_info.flags = FLAG_HELP;
+       if(!strcmp(arguments[i], ARG_VERSION_L) || !strcmp(arguments[i], ARG_VERSION_S))
+            argument_info.flags = FLAG_VERSION;
     
         /* if the arguments contain a file location, store it */
-        else if(!strcmp(arguments[i], ARG_FILE_LOC))
+        else if(!strcmp(arguments[i], ARG_FILE_LOC_L) || !strcmp(arguments[i], ARG_FILE_LOC_S))
             argument_info.file = arguments[i + 1];
         
         /* store the prefix */
-        else if(!strcmp(arguments[i], ARG_PREFIX))
-            argument_info.prefix_len = strlen(argument_info.prefix);            
+        else if(!strcmp(arguments[i], ARG_PREFIX_L) || !strcmp(arguments[i], ARG_PREFIX_S))
+            argument_info.prefix_len = strlen(arguments[i + 1]);            
         
         /* look what needs to be changed within the file */
-        else if(!strcmp(arguments[i], ARG_CHNG_BUILD))
+        else if(!strcmp(arguments[i], ARG_CHNG_BUILD_L) || !strcmp(arguments[i], ARG_CHNG_BUILD_S))
             argument_info.flags |= FLAG_BUILD;
-        else if(!strcmp(arguments[i], ARG_CHNG_MINOR))
+        else if(!strcmp(arguments[i], ARG_CHNG_MINOR_L) || !strcmp(arguments[i], ARG_CHNG_MINOR_S))
             argument_info.flags |= FLAG_MINOR;
-        else if(!strcmp(arguments[i], ARG_CHNG_MAJOR))
+        else if(!strcmp(arguments[i], ARG_CHNG_MAJOR_L) || !strcmp(arguments[i], ARG_CHNG_MAJOR_S))
             argument_info.flags |= FLAG_MAJOR;     
 
-        else if(!strcmp(arguments[i], ARG_QUIET))
+        else if(!strcmp(arguments[i], ARG_QUIET_L) || !strcmp(arguments[i], ARG_QUIET_S))
             argument_info.flags |= FLAG_QUIET;       
     }
 }
