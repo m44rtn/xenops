@@ -66,7 +66,7 @@ SOFTWARE.*/
 #define ERROR_NO_FILE           1
 #define ERROR_FILE_NOT_EXIST    404
 
-void help();
+void print_help();
 void arguments_parse(unsigned int nargs, char *arguments[]);
 void parse_file(FILE *file);
 long do_the_trick(long ver_num);
@@ -86,7 +86,7 @@ typedef struct
 
 tARG_INFO argument_info;
 
-void help()
+void print_help()
 {
     /* help screen */
     printf("usage: xenops --file [file-loc] (--prefix [prefix] --major --minor --build)\n\n\n");
@@ -116,9 +116,9 @@ int main(unsigned int nargs, char *args[])
     /* parse the arguments (it probably isn't called 'parsing', but I'll use the word anyway) */
     arguments_parse((nargs - 1), &args[1]);
 
-     if((argument_info.flags & FLAG_HELP))
+    if((argument_info.flags & FLAG_HELP))
     {
-        help();
+        print_help();
         return 0;
     }
     else if((argument_info.flags & FLAG_VERSION))
