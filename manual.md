@@ -42,7 +42,7 @@ To succesfully change the BUILD number, your define line should meet the followi
 - A number in decimal format (e.g. `0`, `1` or `11112233`)
 
 > Example: `#define BUILD 0` or `ILikeCake HAHA_BUILD 0`
-> NOT: `#define BUILD_HAHA 0xFF' or `BUILD 0`
+> NOT: `#define BUILD_HAHA 0xFF` or `BUILD 0`
 
 ### 2.3. Minor (-mi, --minor)
 > usage: `-mi` OR `--minor`
@@ -58,7 +58,7 @@ To succesfully change the MINOR number, your define line should meet the followi
 - A number in decimal format (e.g. `0`, `1` or `11112233`)
 
 > Example: `#define MINOR 0` or `ILikeCake HAHA_MINOR 0`
-> NOT: `#define MINOR_HAHA 0xFF' or `MINOR 0`
+> NOT: `#define MINOR_HAHA 0xFF` or `MINOR 0`
 
 ### 2.4. Major (-ma, --major)
 > usage: `-ma` OR `--major`
@@ -74,7 +74,7 @@ To succesfully change the MAJOR number, your define line should meet the followi
 - A number in decimal format (e.g. `0`, `1` or `11112233`)
 
 > Example: `#define MAJOR 0` or `ILikeCake HAHA_MAJOR 0`
-> NOT: `#define MAJOR_HAHA 0xFF' or `MAJOR 0`
+> NOT: `#define MAJOR_HAHA 0xFF` or `MAJOR 0`
 
 ### 2.5. Overflow (-o, --overflow)
 > usage `-o [b, mi]` OR `--overflow [b, mi]`
@@ -90,12 +90,14 @@ MAJOR (so a rollover to the next parent is not possible).
 Say, you have the limit for BUILD set to 90 and you run XENOPS this:
 
 ```#define BUILD 90
-#define MINOR 0```
+#define MINOR 0
+```
 
 Will become this:
 
 ```#define BUILD 0
-#define MINOR 1```
+#define MINOR 1
+```
 
 Note: the parent should already be defined when using this command.
 
@@ -120,17 +122,20 @@ Example:
 (XENOPS is run) --> result:
 
 ```#define BUILD 19
-#define MINOR 0```
+#define MINOR 0
+```
 
 (XENOPS is run again) --> result:
 
 ```#define BUILD 20
-#define MINOR 0```
+#define MINOR 0
+```
 
 (XENOPS is run again again) --> result:
 
 ```#define BUILD 0
-#define MINOR 1```
+#define MINOR 1
+```
 
 ### 2.7. Prefix (-p, --prefix)
 > usage `-p [prefix]` OR `--prefix [prefix]`
@@ -155,7 +160,8 @@ This command will output the version of XENOPS. If specified, XENOPS will ignore
 Version numbers will typically look something like this:
 
 ```XENOPS 4 Mark I
-Copyright (c) 2020 - MIT Licensed```
+Copyright (c) 2020 - MIT Licensed
+```
 
 The `Mark` refers to which revision of the XENOPS version you have (in this case the version is `4`), where `Mark I` is actually the first release ever of that version.
 
