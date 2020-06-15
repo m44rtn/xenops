@@ -22,6 +22,7 @@ Each version number type (BUILD, MINOR and MAJOR) has its own parent, except MAJ
 
 ### 2.1. File (-f, --file)
 > usage: `-f [path_to_file]` OR `--file [path_to_file]`
+
 > example: `-f example.h` OR `--file example.h`
 
 This command is used to specify which file should be read and written to. This file should already have the
@@ -42,6 +43,7 @@ To succesfully change the BUILD number, your define line should meet the followi
 - A number in decimal format (e.g. `0`, `1` or `11112233`)
 
 > Example: `#define BUILD 0` or `ILikeCake HAHA_BUILD 0`
+
 > NOT: `#define BUILD_HAHA 0xFF` or `BUILD 0`
 
 ### 2.3. Minor (-mi, --minor)
@@ -78,6 +80,7 @@ To succesfully change the MAJOR number, your define line should meet the followi
 
 ### 2.5. Overflow (-o, --overflow)
 > usage `-o [b, mi]` OR `--overflow [b, mi]`
+
 > example `-o b` OR `-o mi` OR `--overflow mi, b`
 
 This command is used to indicate that you want to set an overflow rule on a specific version number. OVERFLOW is used together with LIMIT (refer to *chapter 2.6* of the manual).
@@ -89,13 +92,15 @@ MAJOR (so a rollover to the next parent is not possible).
 
 Say, you have the limit for BUILD set to 90 and you run XENOPS this:
 
-```#define BUILD 90
+```C
+#define BUILD 90
 #define MINOR 0
 ```
 
 Will become this:
 
-```#define BUILD 0
+```C
+#define BUILD 0
 #define MINOR 1
 ```
 
@@ -105,6 +110,7 @@ The rollover will happen to its direct parent. This means that if a limit is set
 
 ### 2.6. Limit (-l, --limit)
 > usage `-l [#, b=#, mi=#]` OR `--limit [#, b=#, mi=#]`
+
 > example `-l 20` OR `-l mi=3` OR `--limit mi=2, b=1024`
 
 This command is used to indicate what a maximum limit is for a version number. LIMIT is used together with OVERFLOW.
@@ -121,24 +127,28 @@ Example:
 
 (XENOPS is run) --> result:
 
-```#define BUILD 19
+```C
+#define BUILD 19
 #define MINOR 0
 ```
 
 (XENOPS is run again) --> result:
 
-```#define BUILD 20
+```C
+#define BUILD 20
 #define MINOR 0
 ```
 
 (XENOPS is run again again) --> result:
 
-```#define BUILD 0
+```C
+#define BUILD 0
 #define MINOR 1
 ```
 
 ### 2.7. Prefix (-p, --prefix)
 > usage `-p [prefix]` OR `--prefix [prefix]`
+
 > example `-p HAHA_` OR `--prefix HAHA_`
 
 This command is used to specify what the prefix is of the type XENOPS needs to change. For example if, in the file, you have specified:
@@ -159,7 +169,8 @@ This command will output the version of XENOPS. If specified, XENOPS will ignore
 
 Version numbers will typically look something like this:
 
-```XENOPS 4 Mark I
+```
+XENOPS 4 Mark I
 Copyright (c) 2020 - MIT Licensed
 ```
 
