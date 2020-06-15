@@ -19,6 +19,8 @@ For an example, take a look at example.h in the repo.
 
 The option `--quiet` will make Xenops quiet, this can be useful in a makefile when you want a 'no news = good news' output.
 
+Read the manual for a better explanation.
+
 ## How to install and run xenops
 You can use the makefile to build the source. Just use 
 `make build`.
