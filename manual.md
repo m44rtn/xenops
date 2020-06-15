@@ -123,9 +123,7 @@ Using LIMIT is pretty simple, you can either:
 
 - Just setting the limit without specifying the type, which sets the limit globally for both BUILD and MINOR (e.g. `-l 20` to set the limit for MINOR and BUILD to 20)
 
-The limit is set to the number it may be at maximum. Meaning that XENOPS will propagate at `> [limit]`. If you set the limit to 20 for BUILD, XENOPS will count up to 20. Only when it's about to become 21 it will rollover.
-
-Example:
+The limit is set to the number it may be at maximum. Meaning that XENOPS will propagate at `> [limit]`. If you set the limit to 20 for BUILD, XENOPS will count up to 20. Only when it's about to become 21 it will rollover. Example:
 
 (XENOPS is run) --> result:
 
