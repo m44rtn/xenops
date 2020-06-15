@@ -60,6 +60,7 @@ To succesfully change the MINOR number, your define line should meet the followi
 - A number in decimal format (e.g. `0`, `1` or `11112233`)
 
 > Example: `#define MINOR 0` or `ILikeCake HAHA_MINOR 0`
+
 > NOT: `#define MINOR_HAHA 0xFF` or `MINOR 0`
 
 ### 2.4. Major (-ma, --major)
@@ -76,6 +77,7 @@ To succesfully change the MAJOR number, your define line should meet the followi
 - A number in decimal format (e.g. `0`, `1` or `11112233`)
 
 > Example: `#define MAJOR 0` or `ILikeCake HAHA_MAJOR 0`
+
 > NOT: `#define MAJOR_HAHA 0xFF` or `MAJOR 0`
 
 ### 2.5. Overflow (-o, --overflow)
