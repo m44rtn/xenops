@@ -141,22 +141,6 @@ void version()
 int main(unsigned int nargs, char *args[])
 {
 
-    /* TODO:
-        feature backlog:
-            - Upon rollover or change of parent, automatically reset the other number to zero [done]
-            - Automatic rollover using: [done]
-                a) overflow, which enables overflow for specified numbers
-                b) limit, which rolls over the specified numbers of [overflow] at the specified limit
-        fixes:
-            - better help [done]
-            - shrinkfile shrinks one byte too many? [done]
-            - clean this shit up [no]
-        misc:
-            - update xenops version
-            - make a manual explaining xenops (oh god, we got there) --> maybe in html
-            - test xenops to pieces [done]
-    */
-
     /* set the argument_info struct up in such a way we can detect errors and prevent them */
     argument_info.file           = NULL;
     argument_info.flags          = 0;
