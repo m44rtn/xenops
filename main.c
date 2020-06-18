@@ -68,6 +68,10 @@ SOFTWARE.*/
 #define LIMIT_ARRAY_BUILD       0
 #define LIMIT_ARRAY_MINOR       1
 
+#define BUILD                   "BUILD"
+#define MINOR                   "MINOR"
+#define MAJOR                   "MAJOR"
+
 #define FLAG_BUILD              1
 #define FLAG_MINOR              1 << 1
 #define FLAG_MAJOR              1 << 2
@@ -90,9 +94,11 @@ void store_overflow(char *str);
 
 void parse_file(FILE *file);
 
+void checkHasOverflowed(char hasOverflowed, char flowTo, FILE *file);
+
 char setcurrent(char *type);
 long getlimit(char current);
-long do_the_trick(long ver_num);
+long do_the_trick(long ver_num, FILE *file);
 
 void write_to_file(FILE *file, long line_size, char file_line[512]);
 int digit_count(long value);
@@ -318,9 +324,9 @@ void parse_file(FILE *file)
             continue;
 
         /* check if the current line is either the BUILD/MINOR/MAJOR and if the flag for it is set*/
-        long isBuild = !strcmp(&type[argument_info.prefix_len], "BUILD") && (argument_info.flags & FLAG_BUILD);
-        long isMinor = !strcmp(&type[argument_info.prefix_len], "MINOR") && (argument_info.flags & FLAG_MINOR);
-        long isMajor = !strcmp(&type[argument_info.prefix_len], "MAJOR") && (argument_info.flags & FLAG_MAJOR);
+        long isBuild = !strcmp(&type[argument_info.prefix_len], BUILD) && (argument_info.flags & FLAG_BUILD);
+        long isMinor = !strcmp(&type[argument_info.prefix_len], MINOR) && (argument_info.flags & FLAG_MINOR);
+        long isMajor = !strcmp(&type[argument_info.prefix_len], MAJOR) && (argument_info.flags & FLAG_MAJOR);
 
         /* if it is, change it */
         if(isBuild || isMinor || isMajor)
@@ -338,8 +344,7 @@ void parse_file(FILE *file)
             if(limit && (current == (argument_info.whatToOverflow & current)) 
                 && (nver >= limit)) 
                 {
-                    if(digit_count(nver) > 1)
-                        ShrinkFile(file, digit_count(nver));
+                    ShrinkFile(file, digit_count(nver));
 
                     nver = 0;
                     
@@ -349,47 +354,53 @@ void parse_file(FILE *file)
                     flowTo |= current << 1;
                 }
             else
-            {
-                if (digit_count(nver) < digit_count(nver + 1))
-                    GrowFile(file);
+                nver = do_the_trick(nver, file);
             
-                
-                nver = do_the_trick(nver);
-            }
-
             /* check if we had to overflow to this one */
             if(hasOverflowed && ((flowTo & current) == current))
                 hasOverflowed = 0;
             
-            
             ignore = sprintf(file_str, "%s %s %ld", define, type, nver);
             write_to_file(file, line_len, file_str); 
 
-            if(!(argument_info.flags & FLAG_QUIET)) printf("%s increased to %ld\n", type, nver);
+            if(!(argument_info.flags & FLAG_QUIET)) 
+                printf("%s increased to %ld\n", type, nver);
         }
     }
+    
+    /* check if we've already updated the parent, if necessarry, and if not 
+    make sure we read the file. (because the parent is probably above it's child in the file) */
+    checkHasOverflowed(hasOverflowed, flowTo, file); 
+}
 
-    /* if hasOverflow was never reset to 0, then we haven't found it yet 
-        (someone is weird enough to put everything in a weird order)... so we have to
-        try again, but disable the things we have already done.
+void checkHasOverflowed(char hasOverflowed, char flowTo, FILE *file)
+{
+
+    /* if hasOverflow was never reset to 0, then we haven't found the type we needed to overflow yet
+        (parent type to increase). 
+
+        by reading the file again with all flags off (except the ones we
+        need to find the parent type) we can find them, and change them.
         
-        I know this isn't the best solution */
-    if(hasOverflowed)
-    {
-        argument_info.flags = (argument_info.flags & FLAG_QUIET) | flowTo;
-        fseek(file, 0, SEEK_SET);
-        parse_file(file);
-    }
+        this probably isn't the most beautiful solution, but it works */
+
+    if(!hasOverflowed)
+        return;
+
+    argument_info.flags = (argument_info.flags & FLAG_QUIET) | flowTo;
+    fseek(file, 0, SEEK_SET);
+    parse_file(file);
+    
 }
 
 /* returns what we're currently working on */
 char setcurrent(char *type)
 {
-    if(!strcmp(&type[argument_info.prefix_len], "BUILD"))
+    if(!strcmp(&type[argument_info.prefix_len], BUILD))
         return FLAG_BUILD;
-    if(!strcmp(&type[argument_info.prefix_len], "MINOR"))
+    if(!strcmp(&type[argument_info.prefix_len], MINOR))
         return FLAG_MINOR;
-    if(!strcmp(&type[argument_info.prefix_len], "MAJOR"))
+    if(!strcmp(&type[argument_info.prefix_len], MAJOR))
         return FLAG_MAJOR;
 }
 
@@ -403,10 +414,12 @@ long getlimit(char current)
     return 0;
 }
 
-long do_the_trick(long ver_num)
+long do_the_trick(long ver_num, FILE *file)
 {
-    ver_num++;    
-    return ver_num;
+    if (digit_count(ver_num) < digit_count(ver_num + 1))
+        GrowFile(file);
+
+    return ++ver_num;
 }
 
 void write_to_file(FILE *file, long line_size, char file_line[512])
@@ -417,45 +430,15 @@ void write_to_file(FILE *file, long line_size, char file_line[512])
 
 int digit_count(long value)
 {
-    int returnValue;
+    int count = (!value) ? 1 : 0;
 
-
-    if (value >= 0 && value <= 9)
+    while(value != 0)
     {
-        returnValue = 1;
+        count++;
+        value = value / 10;
     }
 
-    if (value >= 10 && value <= 99)
-    {
-        returnValue = 2;
-    }
-
-    if (value >= 100 && value <= 999)
-    {
-        returnValue = 3;
-    }
-
-    if (value >= 1000 && value <= 9999)
-    {
-        returnValue = 4;
-    }
-
-    if (value >= 10000 && value <= 99999)
-    {
-        returnValue = 5;
-    }
-
-    if (value >= 100000 && value <= 999999)
-    {
-        returnValue = 6;
-    }
-
-    if (value >= 1000000 && value <= 9999999)
-    {
-        returnValue = 7;
-    }
-
-    return returnValue;
+    return count;
 }
 
 void GrowFile(FILE *file)
