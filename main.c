@@ -310,10 +310,7 @@ void parse_file(FILE *file)
     int ignore;
     long nver, limit;
     size_t line_len;
-    
-    /* it may be nice to clean this function up sometime */
 
-    /* There is probably a better way to do this */
     while(fgets(file_str, 512, file))
     {
         line_len = strlen(file_str);
@@ -328,7 +325,7 @@ void parse_file(FILE *file)
         long isMinor = !strcmp(&type[argument_info.prefix_len], MINOR) && (argument_info.flags & FLAG_MINOR);
         long isMajor = !strcmp(&type[argument_info.prefix_len], MAJOR) && (argument_info.flags & FLAG_MAJOR);
 
-        /* if it is, change it */
+        /* if it is, lets change it */
         if(isBuild || isMinor || isMajor)
         {
             current = setcurrent(&type[argument_info.prefix_len]);
@@ -360,9 +357,12 @@ void parse_file(FILE *file)
             if(hasOverflowed && ((flowTo & current) == current))
                 hasOverflowed = 0;
             
+            /* change and write the file, to update it to the new information */
             ignore = sprintf(file_str, "%s %s %ld", define, type, nver);
             write_to_file(file, line_len, file_str); 
 
+            /* print what we did to the output of the console, unless the user
+            specified he wants us to shut up */
             if(!(argument_info.flags & FLAG_QUIET)) 
                 printf("%s increased to %ld\n", type, nver);
         }
@@ -380,7 +380,7 @@ void checkHasOverflowed(char hasOverflowed, char flowTo, FILE *file)
         (parent type to increase). 
 
         by reading the file again with all flags off (except the ones we
-        need to find the parent type) we can find them, and change them.
+        need to find the parent type) we can find and change them anyway.
         
         this probably isn't the most beautiful solution, but it works */
 
@@ -389,8 +389,7 @@ void checkHasOverflowed(char hasOverflowed, char flowTo, FILE *file)
 
     argument_info.flags = (argument_info.flags & FLAG_QUIET) | flowTo;
     fseek(file, 0, SEEK_SET);
-    parse_file(file);
-    
+    parse_file(file);  
 }
 
 /* returns what we're currently working on */
