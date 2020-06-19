@@ -2,7 +2,7 @@
 
 Xenops is a tool that can help with incrementing the version number in a file for your project. Xenops supports multiple define standards, such as the C `#define` but also the assembly `%define`, since [commit 3a59cad](https://github.com/m44rtn/xenops/commit/3a59cade2cd184dc7363db343e27151ef0b66a01).
 
-This tool is written for the Linux terminal, but Microsoft's WSL will probably work too.
+This tool is written for the Linux terminal, but Microsoft's WSL may work too.
 
 
 ## What it can change
@@ -33,6 +33,4 @@ and you'd like to be able to run it anywhere you can add the following line to t
 `PATH=$PATH:/home/username/custom_bin`. After doing this, you can run xenops from any directory using
 `xenops [commands]`.
 
-## Feedback 'n such
-Feedback and contributions are very welcome.
 
