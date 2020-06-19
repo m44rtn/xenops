@@ -83,7 +83,7 @@ To succesfully change the MAJOR number, your define line should meet the followi
 ### 2.5. Overflow (-o, --overflow)
 > usage `-o [b, mi]` OR `--overflow [b, mi]`
 
-> example `-o b` OR `-o mi` OR `--overflow mi, b`
+> example:`-o b` OR `-o mi` OR `--overflow mi, b`
 
 This command is used to indicate that you want to set an overflow rule on a specific version number. OVERFLOW is used together with LIMIT (refer to *chapter 2.6* of the manual).
 
@@ -113,7 +113,7 @@ The rollover will happen to its direct parent. This means that if a limit is set
 ### 2.6. Limit (-l, --limit)
 > usage `-l [#, b=#, mi=#]` OR `--limit [#, b=#, mi=#]`
 
-> example `-l 20` OR `-l mi=3` OR `--limit mi=2, b=1024`
+> example:`-l 20` OR `-l mi=3` OR `--limit mi=2, b=1024`
 
 This command is used to indicate what a maximum limit is for a version number. LIMIT is used together with OVERFLOW.
 
@@ -121,7 +121,7 @@ Using LIMIT is pretty simple, you can either:
 
 - Specify a limit by specifying which type it refers to (BUILD (`b`) or MINOR (`mi`)) and put `=[limit]` after it (e.g. `b=10` to set the limit for BUILD to 10); OR
 
-- Just setting the limit without specifying the type, which sets the limit globally for both BUILD and MINOR (e.g. `-l 20` to set the limit for MINOR and BUILD to 20)
+- Just setting the limit without specifying the type, which sets the limit globally for all types specified by OVERFLOW (e.g. `-l 20` with `-o mi, b` to set the limit for MINOR and BUILD to 20)
 
 The limit is set to the number it may be at maximum. Meaning that XENOPS will propagate at `> [limit]`. If you set the limit to 20 for BUILD, XENOPS will count up to 20. Only when it's about to become 21 it will rollover. Example:
 
@@ -147,9 +147,9 @@ The limit is set to the number it may be at maximum. Meaning that XENOPS will pr
 ```
 
 ### 2.7. Prefix (-p, --prefix)
-> usage `-p [prefix]` OR `--prefix [prefix]`
+> usage: `-p [prefix]` OR `--prefix [prefix]`
 
-> example `-p HAHA_` OR `--prefix HAHA_`
+> example: `-p HAHA_` OR `--prefix HAHA_`
 
 This command is used to specify what the prefix is of the type XENOPS needs to change. For example if, in the file, you have specified:
 
