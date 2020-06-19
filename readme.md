@@ -1,9 +1,6 @@
 # Xenops
 
-Xenops is a tool that can help with incrementing the version number in a file for your project. Xenops supports multiple define standards, such as the C `#define` but also the assembly `%define`, since [commit 3a59cad](https://github.com/m44rtn/xenops/commit/3a59cade2cd184dc7363db343e27151ef0b66a01).
-
-This tool is written for the Linux terminal, but Microsoft's WSL may work too.
-
+Xenops is a Linux tool that can help with incrementing the version number in a file for your project. 
 
 ## What it can change
 Xenops can change the BUILD/MINOR/MAJOR numbers in a file. It can update all the numbers in one go. You can use
