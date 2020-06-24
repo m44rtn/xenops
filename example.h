@@ -4,7 +4,7 @@
 #define EXAMPLE_H
 
 #define BUILD 0
-#define MINOR 36
-#define MAJOR 30
+#define MINOR 38
+#define MAJOR 50
 
 #endif

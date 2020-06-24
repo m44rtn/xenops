@@ -170,9 +170,8 @@ int main(unsigned int nargs, char *args[])
         return 0;
     }
 
-    /* 0x1F fixes a bug: it makes sure FLAG_QUIET is ignored. Otherwise it causes a problem where when you don't
-    specify any other commands (ARG_BUILD etc.) with it, it wouldn't auto-search and change the BUILD and nothing would be altered. */
-    if((argument_info.flags & 0x1F) == 0) argument_info.flags |= FLAG_BUILD;
+    /* Were any flags (other than quiet) chosen? if not we can set FLAG_BUILD as default  */
+    if((argument_info.flags & 0xFFEF) == 0) argument_info.flags |= FLAG_BUILD;
 
     /* did we get a file? */
     if(argument_info.file == NULL)
