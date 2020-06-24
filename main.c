@@ -170,8 +170,8 @@ int main(unsigned int nargs, char *args[])
         return 0;
     }
 
-    /* Were any flags (other than quiet) chosen? if not we can set FLAG_BUILD as default  */
-    if((argument_info.flags & 0xFFEF) == 0) argument_info.flags |= FLAG_BUILD;
+    /* Were any flags (other than quiet and limit_everything) chosen? if not we can set FLAG_BUILD as default  */
+    if((argument_info.flags & 0xFFAF) == 0) argument_info.flags |= FLAG_BUILD;
 
     /* did we get a file? */
     if(argument_info.file == NULL)
@@ -193,7 +193,7 @@ int main(unsigned int nargs, char *args[])
 
     /* now we can do things with it */
     parse_file(file);
-    
+
     fclose(file);
     return 0;
 }
