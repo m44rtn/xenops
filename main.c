@@ -28,7 +28,7 @@ SOFTWARE.*/
 /* Note to self: reset minor to 0 with every major number */
 #define XENOPS_VERSION_MAJOR 4
 #define XENOPS_VERSION_MINOR 1
-#define XENOPS_VERSION_ISRC  1  /* 1 == is Release Candidate, 0 == is not a Release Candidate */
+#define XENOPS_VERSION_ISRC  0  /* 1 == is Release Candidate, 0 == is not a Release Candidate */
 #define XENOPS_RELEASE_YEAR  2020
 
 
