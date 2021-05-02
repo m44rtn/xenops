@@ -24,7 +24,7 @@ SOFTWARE.*/
 #ifndef __VERSION_H__
 #define __VERSION_H__
 
-#define XENOPS_VERSION_BUILD 8
+#define XENOPS_VERSION_BUILD 11
 
 /* Note to self: reset minor to 0 with every major number */
 #define XENOPS_VERSION_MAJOR 5

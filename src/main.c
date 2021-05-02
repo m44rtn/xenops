@@ -97,7 +97,7 @@ void print_help()
 void version()
 {
     char *is_rc = XENOPS_VERSION_ISRC ? "-RC" : " ";
-    printf("\nXENOPS %i Mark %i%s\nCopyright (c) %i - MIT Licensed\n\n", XENOPS_VERSION_MAJOR, XENOPS_VERSION_MINOR, is_rc, XENOPS_RELEASE_YEAR);
+    printf("\nXENOPS %i Mark %i%s (build: %i)\nCopyright (c) %i - MIT Licensed\n\n", XENOPS_VERSION_MAJOR, XENOPS_VERSION_MINOR, is_rc, XENOPS_VERSION_BUILD, XENOPS_RELEASE_YEAR);
 }
 
 int main(unsigned int nargs, char *args[])
