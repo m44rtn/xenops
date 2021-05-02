@@ -1,6 +1,6 @@
 /* MIT License:
 
-Copyright (c) 2020 Maarten Vermeulen
+Copyright (c) 2019-2021 Maarten Vermeulen
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,9 @@ SOFTWARE.*/
 
 /* Note to self: reset minor to 0 with every major number */
 #define XENOPS_VERSION_MAJOR 4
-#define XENOPS_VERSION_MINOR 1
-#define XENOPS_VERSION_ISRC  0  /* 1 == is Release Candidate, 0 == is not a Release Candidate */
-#define XENOPS_RELEASE_YEAR  2020
+#define XENOPS_VERSION_MINOR 0
+#define XENOPS_VERSION_ISRC  1      /* 1 == is Release Candidate, 0 == is not a Release Candidate */
+#define XENOPS_RELEASE_YEAR  2021
 
 
 #define ARG_FILE_LOC_L              "--file"    /* location of the file containing the versioning */
