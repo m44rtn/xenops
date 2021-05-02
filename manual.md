@@ -25,7 +25,7 @@ Each version number type (BUILD, MINOR and MAJOR) has its own parent, except MAJ
 
 > example: `-f example.h` OR `--file example.h`
 
-This command is used to specify which file should be read and written to. This file should already have the
+This command is used to specify which file should be read from and written to. This file should already have the
 `BUILD`, `MINOR` and/or `MAJOR` types defined (depending on which XENOPS is going to change).
 
 ### 2.2. Build (-b, --build) [DEFAULT]
@@ -106,7 +106,7 @@ Will become this:
 #define MINOR 1
 ```
 
-Note: the parent should already be defined when using this command.
+Note: the parent should already be defined in the file when using this command.
 
 The rollover will happen to its direct parent. This means that if a limit is set on BUILD, XENOPS will rollover to MINOR. You cannot, at the time of writing, rollover from BUILD to MAJOR.
 
@@ -176,7 +176,7 @@ Copyright (c) 2020 - MIT Licensed
 
 The `Mark` refers to which revision of the XENOPS version you have (in this case the version is `4`), where `Mark I` is actually the first release ever of that version.
 
-In some cases, after the `Mark #`, you may find the characters `RC`. This refers to 'Release Candidate' and is basically a glorified test version.
+In some cases, after the `Mark #`, you may find the characters `RC`. This refers to 'Release Candidate', which is basically a glorified test version.
 
 ### 2.10. Help (-h, --help)
 > usage `-h` OR `--help`
