@@ -72,7 +72,7 @@ typedef struct
     unsigned int prefix_len;
 
     /* overflow and limit stuff */
-    unsigned char whatToOverflow;
+    unsigned char what_to_overflow;
     unsigned int limit[2];
 } tARG_INFO;
 
@@ -107,7 +107,7 @@ int main(unsigned int nargs, char *args[])
     argument_info.file           = NULL;
     argument_info.flags          = 0;
     argument_info.prefix_len     = 0;
-    argument_info.whatToOverflow = 0;
+    argument_info.what_to_overflow = 0;
 
     /* limits for every -l argument ('b' or 'mi') */
     argument_info.limit[0] = argument_info.limit[1] = 0;
@@ -253,14 +253,15 @@ void parse_limit(char **str, unsigned int start, unsigned int end)
 void store_overflow(char *str)
 {
     if(strstr(str, ARG_BUILD))
-        argument_info.whatToOverflow |= FLAG_BUILD;
+        argument_info.what_to_overflow |= FLAG_BUILD;
     if(strstr(str, ARG_MINOR))
-        argument_info.whatToOverflow |= FLAG_MINOR;
+        argument_info.what_to_overflow |= FLAG_MINOR;
 }
 
 void parse_file(FILE *file)
 {
-    char file_str[512], define[512], type[512];
+    // FIXME: these char buffers are ridiculous use strlen and malloc or something
+    char file_str[2048], define[512], type[512];
     char current, hasOverflowed = 0, flowTo = 0;
     int ignore;
     long nver, limit;
@@ -293,7 +294,7 @@ void parse_file(FILE *file)
                 
                 if all is true, set the version number to 0 (that's a zero)
             */      
-            if(limit && (current == (argument_info.whatToOverflow & current)) 
+            if(limit && (current == (argument_info.what_to_overflow & current)) 
                 && (nver >= limit)) 
                 {
                     ShrinkFile(file, digit_count(nver));
@@ -313,7 +314,7 @@ void parse_file(FILE *file)
                 hasOverflowed = 0;
             
             /* change and write the file, to update it to the new information */
-            ignore = sprintf(file_str, "%s %s %ld", define, type, nver);
+            ignore = sprintf(file_str, "%.512s %.512s %.22ld", define, type, nver);
             write_to_file(file, line_len, file_str); 
 
             /* print what we did to the output of the console, unless the user
