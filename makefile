@@ -10,10 +10,10 @@ CC := gcc
 # Update build number using xenops stable
 # and build the new executable
 build:
-	xenops -q -f $(INCDIRS)/version.h
+	xenops -q -f $(INCDIRS)/version.h -p XENOPS_VERSION_
 	$(CC) -o xenops $(SRCFILES) -std=c99
 
 release: version build
 
 version:
-	xenops -f main.c -ma -mi -p XENOPS_VERSION_ -q	
+	xenops -f $(INCDIRS)/version.h -mi -p XENOPS_VERSION_ -q	

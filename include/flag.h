@@ -21,15 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#ifndef __VERSION_H__
-#define __VERSION_H__
+#ifndef __FLAG_H__
+#define __FLAG_H__
 
-#define XENOPS_VERSION_BUILD 2
+#define FLAG_BUILD              1
+#define FLAG_MINOR              1 << 1
+#define FLAG_MAJOR              1 << 2
 
-/* Note to self: reset minor to 0 with every major number */
-#define XENOPS_VERSION_MAJOR 5
-#define XENOPS_VERSION_MINOR 0
-#define XENOPS_VERSION_ISRC  1      /* 1 == is Release Candidate, 0 == is not a Release Candidate */
-#define XENOPS_RELEASE_YEAR  2021
+#define FLAG_HELP               1 << 3  /* this makes sure we can check if help has been called (for the error checking 'n such) */
+#define FLAG_QUIET              1 << 4  /* The quiet option means no output to the shell */
+#define FLAG_VERSION            1 << 5  /* Shows the version of Xenops */
+#define FLAG_LIMIT_EVERYTHING   1 << 6  /* A limit has been set globally, so we need to keep track of that */
 
-#endif // __VERSION_H__
+#endif // __FLAG_H__

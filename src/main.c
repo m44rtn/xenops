@@ -1,6 +1,7 @@
 /* MIT License:
 
 Copyright (c) 2019-2021 Maarten Vermeulen
+Copyright (c) 2019      Mercury Thirteen (mercury0x000d)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,45 +26,9 @@ SOFTWARE.*/
 #include <stdlib.h>
 #include <unistd.h>
 
-/* Note to self: reset minor to 0 with every major number */
-#define XENOPS_VERSION_MAJOR 4
-#define XENOPS_VERSION_MINOR 0
-#define XENOPS_VERSION_ISRC  1      /* 1 == is Release Candidate, 0 == is not a Release Candidate */
-#define XENOPS_RELEASE_YEAR  2021
-
-
-#define ARG_FILE_LOC_L              "--file"    /* location of the file containing the versioning */
-#define ARG_FILE_LOC_S              "-f"    
-
-#define ARG_HELP_L                  "--help"    /* guess what this does */
-#define ARG_HELP_S                  "-h"
-
-#define ARG_QUIET_L                 "--quiet"   /* shuts xenops up */
-#define ARG_QUIET_S                 "-q"  
-
-#define ARG_PREFIX_L                "--prefix"  /* prefix to the major/minor/build numbers in the file */
-#define ARG_PREFIX_S                "-p"
-
-#define ARG_VERSION_L		        "--version" /* the version of Xenops */
-#define ARG_VERSION_S		        "-v"
-
-#define ARG_OVERFLOW_L              "--overflow" /* enable overflow for specific numbers (for limit)... */
-#define ARG_OVERFLOW_S              "-o"         /* ...when using --limit, default is all */
-
-#define ARG_MINOR                   "mi" /* these will be used to specify which numbers to overflow */
-#define ARG_BUILD                   "b"
-
-#define ARG_LIMIT_L                 "--limit"   /* limit the numbers of build/minor/major to a specific number... */
-#define ARG_LIMIT_S                 "-l"        /* ...so that the version number may automatically roll-over to the its 'parent'
-                                                    (refer to manual for better explanation) */
-
-#define ARG_CHNG_MAJOR_L            "--major"   /* change major version number */
-#define ARG_CHNG_MINOR_L            "--minor"   /* change minor version number */
-#define ARG_CHNG_BUILD_L            "--build"   /* change build version number (default) */
-
-#define ARG_CHNG_MAJOR_S            "-ma"   /* change major version number */
-#define ARG_CHNG_MINOR_S            "-mi"   /* change minor version number */
-#define ARG_CHNG_BUILD_S            "-b"   /* change build version number (default) */
+#include "../include/version.h"
+#include "../include/arg.h"
+#include "../include/flag.h"
 
 #define LIMIT_ARRAY_BUILD       0
 #define LIMIT_ARRAY_MINOR       1
@@ -71,15 +36,6 @@ SOFTWARE.*/
 #define BUILD                   "BUILD"
 #define MINOR                   "MINOR"
 #define MAJOR                   "MAJOR"
-
-#define FLAG_BUILD              1
-#define FLAG_MINOR              1 << 1
-#define FLAG_MAJOR              1 << 2
-
-#define FLAG_HELP               1 << 3  /* this makes sure we can check if help has been called (for the error checking 'n such) */
-#define FLAG_QUIET              1 << 4  /* The quiet option means no output to the shell */
-#define FLAG_VERSION            1 << 5  /* Shows the version of Xenops */
-#define FLAG_LIMIT_EVERYTHING   1 << 6  /* A limit has been set globally, so we need to keep track of that */
 
 /* maybe these aren't really necessary... */
 #define ERROR_NO_FILE           1
