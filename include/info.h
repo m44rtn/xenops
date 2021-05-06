@@ -21,15 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-#ifndef __VERSION_H__
-#define __VERSION_H__
+#ifndef __INFO_H__
+#define __INFO_H__
 
-#define XENOPS_VERSION_BUILD 17
+void info_print_help(void);
+void info_version(void);
 
-/* Note to self: reset minor to 0 with every major number */
-#define XENOPS_VERSION_MAJOR 5
-#define XENOPS_VERSION_MINOR 0
-#define XENOPS_VERSION_ISRC  1      /* 1 == is Release Candidate, 0 == is not a Release Candidate */
-#define XENOPS_RELEASE_YEAR  2021
-
-#endif // __VERSION_H__
+#endif // __INFO_H__

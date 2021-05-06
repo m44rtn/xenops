@@ -30,6 +30,8 @@ SOFTWARE.*/
 #include "../include/arg.h"
 #include "../include/flag.h"
 
+#include "../include/info.h"
+
 #define LIMIT_ARRAY_BUILD       0
 #define LIMIT_ARRAY_MINOR       1
 
@@ -41,7 +43,6 @@ SOFTWARE.*/
 #define ERROR_NO_FILE           1
 #define ERROR_FILE_NOT_EXIST    404
 
-void print_help();
 void arguments_parse(unsigned int nargs, char *arguments[]);
 
 void parse_overflow(char **str, unsigned int start, unsigned int end);
@@ -78,28 +79,6 @@ typedef struct
 
 tARG_INFO argument_info;
 
-void print_help()
-{
-    /* help screen */
-    printf("Basic usage: xenops --file [file-loc] (--prefix [prefix] --major --minor --build)\n\n\n");
-    printf("%s, %s\t\t\t\tLets me know which file to use\n", ARG_FILE_LOC_S, ARG_FILE_LOC_L);
-    printf("\n%s, %s\t\t\t\tThis lets me know I should increment the major version number as well\n", ARG_CHNG_MAJOR_S, ARG_CHNG_MAJOR_L);
-    printf("%s, %s\t\t\t\tThis lets me know I should increment the minor version number as well\n", ARG_CHNG_MINOR_S, ARG_CHNG_MINOR_L);
-    printf("%s, %s\t\t\t\t(default) This lets me know I should increment the build version number as well\n", ARG_CHNG_BUILD_S, ARG_CHNG_BUILD_L);
-    printf("%s, %s [b,mi]\t\t\tLets me know on which version number to apply an overflow rule (refer to manual)\n", ARG_OVERFLOW_S, ARG_OVERFLOW_L);
-    printf("%s, %s [#, b=#, mi=#]\t\tLets me know what the limit is for the version number (refer to manual)\n", ARG_LIMIT_S, ARG_LIMIT_L);
-    printf("\n%s, %s [prefix]\t\t\tThis lets me know if there's something in front of major/minor/build (for example VER_BUILD instead of BUILD)\n", ARG_PREFIX_S, ARG_PREFIX_L);
-
-    printf("\n%s, %s\t\t\t\tXENOPS won't output any text to the shell\n", ARG_QUIET_S, ARG_QUIET_L);
-    printf("%s, %s\t\t\t\tShows version number\n", ARG_VERSION_S, ARG_VERSION_L);
-}
-
-void version()
-{
-    char *is_rc = XENOPS_VERSION_ISRC ? "-RC" : " ";
-    printf("\nXENOPS %i Mark %i%s (build: %i)\nCopyright (c) %i - MIT Licensed\n\n", XENOPS_VERSION_MAJOR, XENOPS_VERSION_MINOR, is_rc, XENOPS_VERSION_BUILD, XENOPS_RELEASE_YEAR);
-}
-
 int main(unsigned int nargs, char *args[])
 {
 
@@ -117,12 +96,12 @@ int main(unsigned int nargs, char *args[])
 
     if((argument_info.flags & FLAG_HELP))
     {
-        print_help();
+        info_print_help();
         return 0;
     }
     else if((argument_info.flags & FLAG_VERSION))
     {
-        version();
+        info_version();
         return 0;
     }
 
