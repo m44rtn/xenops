@@ -13,7 +13,7 @@ FLAGS := -D_XOPEN_SOURCE=500 -std=c99
 # Update build number using xenops stable
 # and build the new executable
 build:
-	@xenops -q -f $(INCDIRS)/version.h -p XENOPS_VERSION_
+	-@xenops -q -f $(INCDIRS)/version.h -p XENOPS_VERSION_
 	@$(CC) -o xenops $(SRCFILES) $(FLAGS)
 
 release: version build
