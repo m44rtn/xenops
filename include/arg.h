@@ -43,8 +43,8 @@ SOFTWARE.*/
 #define ARG_OVERFLOW_L              "--overflow" /* enable overflow for specific numbers (for limit)... */
 #define ARG_OVERFLOW_S              "-o"         /* ...when using --limit, default is all */
 
-#define ARG_MINOR                   "mi" /* these will be used to specify which numbers to overflow */
-#define ARG_BUILD                   "b"
+#define LIMIT_OVERLOW_ARG_MINOR                   "mi" /* these will be used to specify which numbers to overflow */
+#define LIMIT_OVERLOW_ARG_BUILD                   "b"
 
 #define ARG_LIMIT_L                 "--limit"   /* limit the numbers of build/minor/major to a specific number... */
 #define ARG_LIMIT_S                 "-l"        /* ...so that the version number may automatically roll-over to the its 'parent'

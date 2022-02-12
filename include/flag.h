@@ -24,9 +24,10 @@ SOFTWARE.*/
 #ifndef __FLAG_H__
 #define __FLAG_H__
 
-#define FLAG_BUILD              1
-#define FLAG_MINOR              1 << 1
-#define FLAG_MAJOR              1 << 2
+#define TYPE_FLAG               1
+#define FLAG_BUILD              TYPE_FLAG
+#define FLAG_MINOR              TYPE_FLAG << 1
+#define FLAG_MAJOR              TYPE_FLAG << 2
 
 #define FLAG_HELP               1 << 3  /* this makes sure we can check if help has been called (for the error checking 'n such) */
 #define FLAG_QUIET              1 << 4  /* The quiet option means no output to the shell */
