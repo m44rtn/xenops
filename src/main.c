@@ -39,6 +39,8 @@ SOFTWARE.*/
 #define MINOR                   "MINOR"
 #define MAJOR                   "MAJOR"
 
+#define N_TYPES                 3  // there are three types to check (BUILD, MINOR, MAJOR)
+
 /* maybe these aren't really necessary... */
 #define ERROR_NO_FILE           1
 #define ERROR_FILE_NOT_EXIST    404
@@ -50,10 +52,11 @@ void parse_limit(char **str, unsigned int start, unsigned int end);
 void store_overflow(char *str);
 
 void parse_file(FILE *file);
+long increase(long type, long nver, FILE *file, int *overflowed);
 
-void checkHasOverflowed(char hasOverflowed, char flowTo, FILE *file);
+void hasoverflowed(int *hasOverflowed, FILE *file);
 
-char setcurrent(char *type);
+long check_type(char *type);
 long getlimit(char current);
 long do_the_trick(long ver_num, FILE *file);
 
@@ -73,7 +76,7 @@ typedef struct
     unsigned int prefix_len;
 
     /* overflow and limit stuff */
-    unsigned char what_to_overflow;
+    unsigned char types_to_overlow;
     unsigned int limit[2];
 } tARG_INFO;
 
@@ -86,7 +89,7 @@ int main(unsigned int nargs, char *args[])
     argument_info.file           = NULL;
     argument_info.flags          = 0;
     argument_info.prefix_len     = 0;
-    argument_info.what_to_overflow = 0;
+    argument_info.types_to_overlow = 0;
 
     /* limits for every -l argument ('b' or 'mi') */
     argument_info.limit[0] = argument_info.limit[1] = 0;
@@ -140,6 +143,7 @@ void arguments_parse(unsigned int nargs, char* arguments[])
 
     for(i; i < nargs; i++)
     {
+        // FIXME: ARGs in an array and loop?
         /* if one of the arguments is the help command then set the 
             help flag */
        if(!strcmp(arguments[i], ARG_HELP_L) || !strcmp(arguments[i], ARG_HELP_S)) 
@@ -199,19 +203,20 @@ void parse_limit(char **str, unsigned int start, unsigned int end)
     char *ptr = (char *) 1;
     unsigned int where;
 
+    // FIXME: surely there is a better way
     while(ptr && i < end)
     {
         /* store what is specified in this string piece */
         store_overflow(str[i]);
 
-        if(where = (unsigned long) strstr(str[i], ARG_BUILD))
+        if(where = (unsigned long) strstr(str[i], LIMIT_OVERLOW_ARG_BUILD))
         {
-            where = (where - (unsigned long) str[i]) + strlen(ARG_BUILD)+1;
+            where = (where - (unsigned long) str[i]) + strlen(LIMIT_OVERLOW_ARG_BUILD)+1;
             argument_info.limit[LIMIT_ARRAY_BUILD] = strtoul(&str[i][where], NULL, 10);
         }
-        if(where = (unsigned long) strstr(str[i], ARG_MINOR))
+        if(where = (unsigned long) strstr(str[i], LIMIT_OVERLOW_ARG_MINOR))
         {
-            where = (where - (unsigned long) str[i]) + strlen(ARG_MINOR)+1;
+            where = (where - (unsigned long) str[i]) + strlen(LIMIT_OVERLOW_ARG_MINOR)+1;
             argument_info.limit[LIMIT_ARRAY_MINOR] = strtoul(&str[i][where], NULL, 10);
         }
 
@@ -231,84 +236,93 @@ void parse_limit(char **str, unsigned int start, unsigned int end)
 
 void store_overflow(char *str)
 {
-    if(strstr(str, ARG_BUILD))
-        argument_info.what_to_overflow |= FLAG_BUILD;
-    if(strstr(str, ARG_MINOR))
-        argument_info.what_to_overflow |= FLAG_MINOR;
+    if(strstr(str, LIMIT_OVERLOW_ARG_BUILD))
+        argument_info.types_to_overlow |= FLAG_BUILD;
+    if(strstr(str, LIMIT_OVERLOW_ARG_MINOR))
+        argument_info.types_to_overlow |= FLAG_MINOR;
 }
 
 void parse_file(FILE *file)
 {
     // FIXME: these char buffers are ridiculous use strlen and malloc or something
     char file_str[2048], define[512], type[512];
-    char current, hasOverflowed = 0, flowTo = 0;
-    int ignore;
-    long nver, limit;
+    int hasOverflowed = 0;
+    long nver;
     size_t line_len;
 
     while(fgets(file_str, 512, file))
     {
-        line_len = strlen(file_str);
-        ignore = sscanf(file_str, "%s %s %ld", define, type, &nver);
+        int nvars = sscanf(file_str, "%s %s %ld", define, type, &nver);
 
         /* if we didn't fill enough variables, we may as well cut it short RIGHT NOW! :) */
-        if (ignore < 3)
+        if(nvars < 3)
             continue;
 
-        /* check if the current line is either the BUILD/MINOR/MAJOR and if the flag for it is set*/
-        long isBuild = !strcmp(&type[argument_info.prefix_len], BUILD) && (argument_info.flags & FLAG_BUILD);
-        long isMinor = !strcmp(&type[argument_info.prefix_len], MINOR) && (argument_info.flags & FLAG_MINOR);
-        long isMajor = !strcmp(&type[argument_info.prefix_len], MAJOR) && (argument_info.flags & FLAG_MAJOR);
+        long of_type = check_type(type);
 
-        /* if it is, lets change it */
-        if(isBuild || isMinor || isMajor)
+        if(of_type && (argument_info.flags & of_type) == of_type)
         {
-            current = setcurrent(&type[argument_info.prefix_len]);
-            limit = getlimit(current);
-
-            /* okay, listen up: this checks if the following are true (in this order):
-                    - limit > 0 (if so, a limit has been set, otherwise we can safely ignore this whole thing)
-                    - is the current thing we are checking set by the overflow tag (if not, we shouldn't care about the limit)
-                    - is the current version number the same as the set limit
-                
-                if all is true, set the version number to 0 (that's a zero)
-            */      
-            if(limit && (current == (argument_info.what_to_overflow & current)) 
-                && (nver >= limit)) 
-                {
-                    ShrinkFile(file, digit_count(nver));
-
-                    nver = 0;
-                    
-                    /* indicate that we overflowed and make sure we also now increase the next version thing */
-                    argument_info.flags |= current << 1;
-                    hasOverflowed++;
-                    flowTo |= current << 1;
-                }
-            else
-                nver = do_the_trick(nver, file);
+            nver = increase(of_type, nver, file, &hasOverflowed);
             
-            /* check if we had to overflow to this one */
-            if(hasOverflowed && ((flowTo & current) == current))
-                hasOverflowed = 0;
+            line_len = strlen(file_str);
             
             /* change and write the file, to update it to the new information */
-            ignore = sprintf(file_str, "%.512s %.512s %.22ld", define, type, nver);
-            write_to_file(file, line_len, file_str); 
+            sprintf(file_str, "%.512s %.512s %ld", define, type, nver);
+            write_to_file(file, line_len, file_str);
 
             /* print what we did to the output of the console, unless the user
-            specified he wants us to shut up */
+            specified us to shut up */
             if(!(argument_info.flags & FLAG_QUIET)) 
                 printf("%s increased to %ld\n", type, nver);
+
+            argument_info.flags &= ~(of_type); 
         }
     }
     
     /* check if we've already updated the parent, if necessarry, and if not 
     make sure we read the file. (because the parent is probably above it's child in the file) */
-    checkHasOverflowed(hasOverflowed, flowTo, file); 
+    hasoverflowed(&hasOverflowed, file); 
 }
 
-void checkHasOverflowed(char hasOverflowed, char flowTo, FILE *file)
+long increase(long type, long nver, FILE *file, int *overflowed)
+{
+    long limit = getlimit(type);
+
+    /* check if type == type_to_overlow and that the current version needs to be limited */
+    if(limit && (argument_info.types_to_overlow & type) && (nver >= limit))
+    {
+        ShrinkFile(file, digit_count(nver));
+        nver = 0;
+
+        // set overflow
+        *(overflowed) = (argument_info.flags & (type << 1)) ? 0 : 1;
+
+        /* indicate that we overflowed and make sure we also now increase the next type */
+        argument_info.flags |= type << 1;
+
+        // remove current type from the todo-list, since we may need to read the file again
+        // and you don't want the current type to be updated a second time
+        argument_info.flags &= ~(type); 
+    }
+    else
+        nver = do_the_trick(nver, file);
+    
+    return nver;
+}
+
+// returns the type that is in the string (e.g. BUILD, MINOR or MAJOR)
+long check_type(char *type)
+{
+    char *types[N_TYPES] = {BUILD, MINOR, MAJOR};
+
+    for(int i = 0; i < N_TYPES; ++i)
+        if(!strcmp(&type[argument_info.prefix_len], types[i]))
+            return TYPE_FLAG << i;
+    
+    return 0;
+}
+
+void hasoverflowed(int *hasOverflowed, FILE *file)
 {
 
     /* if hasOverflow was never reset to 0, then we haven't found the type we needed to overflow yet
@@ -319,23 +333,12 @@ void checkHasOverflowed(char hasOverflowed, char flowTo, FILE *file)
         
         this probably isn't the most beautiful solution, but it works */
 
-    if(!hasOverflowed)
+    if(!*(hasOverflowed))
         return;
+    *(hasOverflowed) = 0;
 
-    argument_info.flags = (argument_info.flags & FLAG_QUIET) | flowTo;
     fseek(file, 0, SEEK_SET);
     parse_file(file);  
-}
-
-/* returns what we're currently working on */
-char setcurrent(char *type)
-{
-    if(!strcmp(&type[argument_info.prefix_len], BUILD))
-        return FLAG_BUILD;
-    if(!strcmp(&type[argument_info.prefix_len], MINOR))
-        return FLAG_MINOR;
-    if(!strcmp(&type[argument_info.prefix_len], MAJOR))
-        return FLAG_MAJOR;
 }
 
 long getlimit(char current)
